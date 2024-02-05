@@ -5,7 +5,7 @@ from markupsafe import escape #protects projects against injection attacks
 from intro_to_flask import app
 import sys 
 sys.dont_write_bytecode = True
-from flask import render_template, request, Flask,Blueprint
+from flask import render_template, request, Flask, Blueprint
 from flask_mail import Message, Mail
 from .contact_form import ContactForm
 from .ask_python.ask_route import ask_blueprint
