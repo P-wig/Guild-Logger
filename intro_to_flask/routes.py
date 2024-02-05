@@ -18,9 +18,9 @@ from .transcribe_python.transcribe_route import transcribe_blueprint
 #Google requires an App Password as of May, 2022: 
 #https://support.google.com/accounts/answer/6010255?hl=en&visit_id=637896899107643254-869975220&p=less-secure-apps&rd=1#zippy=%2Cuse-an-app-password
 
-mail_user_name = os.getenv('isaac.shepherd1@yahoo.com')
-mail_app_password = os.getenv('rlgp ikuq nmkp jgrm')
-openai.api_key = os.getenv('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')
+mail_user_name = os.getenv('GMAIL_USER_NAME')
+mail_app_password = os.getenv('GMAIL_APP_PASSWORD')
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
