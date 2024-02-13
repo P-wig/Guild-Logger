@@ -9,11 +9,11 @@ sys.dont_write_bytecode = True
 from flask import render_template, request, Flask, Blueprint
 from .create_speech_form import create_speechForm
 
-draw_blueprint = Blueprint('drawme', __name__)
+create_speech_blueprint = Blueprint('create_speech', __name__)
 
-@draw_blueprint.route('/create_speech',methods=['GET', 'POST'])
+@create_speech_blueprint.route('/create_speech',methods=['GET', 'POST'])
 @app.route('/create_speech',methods=['GET', 'POST'])
-def drawme():
+def create_speech():
   form = create_speechForm(request.form)
   
   if request.method == 'POST':
