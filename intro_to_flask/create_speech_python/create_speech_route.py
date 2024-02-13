@@ -29,6 +29,7 @@ def create_speech():
           voice="alloy",
           input=form.prompt.data,
         )
-        response.stream_to_file("output.mp3")      
+        response.stream_to_file("output.mp3") 
+        return render_template('create_speech.html', form=form, audio_file_path="output.mp3")  
   elif request.method == 'GET':
       return render_template('create_speech.html', form=form)
