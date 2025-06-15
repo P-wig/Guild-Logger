@@ -1,7 +1,6 @@
 ## Modified beginner templete for flask applications
 # TODO:
- - Customize app with personal features
- - Update OpenAI key
+ - Copy and Customize app with personal features
 
  # Progress:
   - Dockerized app and hosted it remotely
