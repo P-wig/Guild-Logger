@@ -23,7 +23,7 @@
       <div class="flash">{{ message }}</div>
     {% endfor %}
     
-    <form action="{{ url_for('contact') }}" method=post>
+    <form action="{{ url_for('main.contact') }}" method=post>
     <!-- 
       This form has no CSRF protection.  To add, see:
       https://flask-wtf.readthedocs.io/en/0.15.x/csrf/

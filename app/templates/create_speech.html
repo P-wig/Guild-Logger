@@ -18,7 +18,7 @@
 <div class="flash">{{ prompt }}</div>
 {% endfor %}
 
-<form action="{{ url_for('create_speech') }}" method=post>
+<form action="{{ url_for('create_speech.create_speech') }}" method=post>
 <!-- 
 This form has no CSRF protection.  To add, see:
 https://flask-wtf.readthedocs.io/en/0.15.x/csrf/

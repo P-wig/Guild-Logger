@@ -12,7 +12,7 @@
 <nav>
     <ul>
       {% for name in team_names %}
-        <li><a href="{{ url_for('about', route_with_name=name) }}">About {{ name }}</a></li>
+        <li><a href="{{ url_for('about.about', route_with_name=name) }}">About {{ name }}</a></li>
       {% endfor %}
     </ul>
   </nav>

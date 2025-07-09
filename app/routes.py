@@ -17,12 +17,12 @@ from .create_speech_python.create_speech_route import create_speech_blueprint
 #Google requires an App Password as of May, 2022: 
 #https://support.google.com/accounts/answer/6010255?hl=en&visit_id=637896899107643254-869975220&p=less-secure-apps&rd=1#zippy=%2Cuse-an-app-password
 
-main_blueprint = Blueprint('main', __name__)
-
 mail_user_name = os.getenv('GMAIL_USER_NAME')
 mail_app_password = os.getenv('GMAIL_APP_PASSWORD')
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+
+main_blueprint = Blueprint('main', __name__)
 
 mail = Mail()
 
