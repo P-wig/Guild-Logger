@@ -17,6 +17,7 @@
 # After the above and setting up the database, you should be able to run and debug this program
 import sys 
 sys.dont_write_bytecode = True
-from app import app
+from app import create_app
 
+app = create_app()
 app.run(host="0.0.0.0", port=5000, debug=True)

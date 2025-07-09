@@ -3,7 +3,7 @@ import openai
 from openai import OpenAI
 import re #regular expressions module
 from markupsafe import escape #protects projects against injection attacks
-from app import app
+#from app import app
 import sys 
 sys.dont_write_bytecode = True
 from flask import render_template, request, Flask, Blueprint
@@ -12,7 +12,7 @@ from .ask_form import AskmeForm
 ask_blueprint = Blueprint('askme', __name__)
 
 @ask_blueprint.route('/askme',methods=['GET', 'POST'])
-@app.route('/askme',methods=['GET', 'POST'])
+#@app.route('/askme',methods=['GET', 'POST'])
 def askme():
   form = AskmeForm(request.form)
   
