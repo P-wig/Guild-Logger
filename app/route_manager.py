@@ -8,9 +8,9 @@ sys.dont_write_bytecode = True
 from flask import render_template, request, Flask, Blueprint
 from flask_mail import Message, Mail
 from .contact_form import ContactForm
-from .ask_python.ask_route import ask_blueprint
-from .about_python.about_route import about_blueprint
-from .create_speech_python.create_speech_route import create_speech_blueprint
+from .routes.ask_route import ask_blueprint
+from .routes.about_route import about_blueprint
+from .routes.create_speech_route import create_speech_blueprint
 
 
 #The mail_user_name and mail_app_password values are in the .env file

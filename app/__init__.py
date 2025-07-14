@@ -25,7 +25,7 @@ def create_app():
     app.config['MAIL_USE_TLS'] = False
     app.config['MAIL_USE_SSL'] = True
 
-    from .routes import mail, all_blueprints
+    from .route_manager import mail, all_blueprints
     mail.init_app(app)
     for bp in all_blueprints:
         app.register_blueprint(bp)

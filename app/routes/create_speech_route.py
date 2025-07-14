@@ -7,7 +7,7 @@ from markupsafe import escape #protects projects against injection attacks
 import sys 
 sys.dont_write_bytecode = True
 from flask import render_template, request, Flask, Blueprint
-from .create_speech_form import create_speechForm
+from ..forms.create_speech_form import create_speechForm
 
 create_speech_blueprint = Blueprint('create_speech', __name__)
 

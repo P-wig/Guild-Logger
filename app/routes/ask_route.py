@@ -7,7 +7,7 @@ from markupsafe import escape #protects projects against injection attacks
 import sys 
 sys.dont_write_bytecode = True
 from flask import render_template, request, Flask, Blueprint
-from .ask_form import AskmeForm
+from ..forms.ask_form import AskmeForm
 
 ask_blueprint = Blueprint('askme', __name__)
 
