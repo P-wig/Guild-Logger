@@ -31,6 +31,7 @@ async def load_cogs():
             except Exception as e:
                 print(f"Failed to load extension {extension}: {e}")
 
+# cogs will be defined and loaded in the cogs directory
 
 if __name__ == "__main__":
     bot.run(TOKEN)

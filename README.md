@@ -1,40 +1,38 @@
 # Guild-Logger Development Plan
 
 ## 📦 Project Overview
-A Flask web app + Discord bot that tracks user event attendance for a Roblox community via a SQL database.
+A Flask web app and Discord bot for monitoring, editing, and tracking Discord server user data and raid event participation via a SQL database.
 
 ## ✅ Goals
-- Track event participation and log to a database
-- Identify inactive users
-- Admin dashboard for search/query
-- Discord bot for attendance logging
 
+### Database & Data Model
+- [✅] Identify required user data: Discord user ID, join date, active/retired status
+- [✅] Identify required event data: raid events, participant user IDs
+- [ ] Design and implement SQL schema: Users, Events, Participation tables
+- [ ] Set up database (SQLite/PostgreSQL)
+- [ ] Seed database with initial data (if needed)
 
-## 🛠️ Development Steps
+### Flask Web Dashboard
+- [ ] Initialize Flask app with basic route
+- [ ] Create admin dashboard for:
+  - [ ] Viewing user list and details
+  - [ ] Editing user data (join date, status, etc.)
+  - [ ] Viewing and editing raid events and participants
+  - [ ] Filtering/searching users/events
+- [ ] User authentication for dashboard access
 
-### Step 1: Project Setup
-- [X] Set up virtual environment and install Flask + Discord.py
-- [ ] Initialize Flask app + basic route
-- [ ] Set up Dockerfile 
+### Discord Bot Integration
+- [✅] Set up virtual environment and install Flask + Discord.py
+- [ ] Connect bot to Discord server
+- [ ] Implement event hosting announcements (live usage)
+- [ ] Sync event participation data from Discord to database
 
-### Step 2: Discord Bot MVP
-- [ ] Connect bot to Discord
-
-### Step 3: Database Integration
-- [ ] Design schema: Members, Events, Attendance
-- [ ] Hook up SQLite/PostgreSQL
-- [ ] Store bot messages into DB
-
-### Step 4: Flask Dashboard
-- [ ] Create admin panel
-- [ ] View events, filter by date/user
-- [ ] Inactive user report
-
-### Step 5: AWS Deployment (EBS)
-- [ ] Write `Dockerrun.aws.json`
+### Deployment & DevOps
+- [ ] Set up Dockerfile
+- [ ] Write `Dockerrun.aws.json` for AWS deployment
 - [ ] Deploy with Elastic Beanstalk CLI
-
 
 ## 📌 Notes
 - Use `.env` for tokens/keys
 - Keep bot and web app loosely coupled
+- Prioritize data integrity and admin usability
