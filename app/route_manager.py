@@ -7,7 +7,7 @@ import sys
 sys.dont_write_bytecode = True
 from flask import render_template, request, Flask, Blueprint
 from flask_mail import Message, Mail
-from .contact_form import ContactForm
+from .forms.contact_form import ContactForm
 from .routes.ask_route import ask_blueprint
 from .routes.about_route import about_blueprint
 from .routes.create_speech_route import create_speech_blueprint

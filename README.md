@@ -13,9 +13,9 @@ A Flask web app + Discord bot that tracks user event attendance for a Roblox com
 ## 🛠️ Development Steps
 
 ### Step 1: Project Setup
-- [ ] Set up virtual environment and install Flask + Discord.py
+- [X] Set up virtual environment and install Flask + Discord.py
 - [ ] Initialize Flask app + basic route
-- [ ] Set up Dockerfile + docker-compose
+- [ ] Set up Dockerfile 
 
 ### Step 2: Discord Bot MVP
 - [ ] Connect bot to Discord

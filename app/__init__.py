@@ -3,12 +3,6 @@ sys.dont_write_bytecode = True
 from flask import Flask
 
 
-#app = Flask(__name__)
-
-#app.secret_key = 'development key'
-#app.config['SECRET_KEY']='LongAndRandomSecretKey'
-
-
 def create_app():
     app = Flask(__name__)
     app.secret_key = 'development key'

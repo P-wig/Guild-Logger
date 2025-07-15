@@ -1,0 +1,1 @@
+# the presence of this file indicates that 'cogs' is a package

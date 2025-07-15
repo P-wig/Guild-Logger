@@ -1,0 +1,1 @@
+# the presence of this file indicates that 'bot' is a package
