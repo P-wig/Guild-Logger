@@ -8,9 +8,9 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 ### Database & Data Model
 - [✅] Identify required user data: Discord user ID, join date, active/retired status
 - [✅] Identify required event data: raid events, participant user IDs
-- [ ] Design and implement SQL schema: Users and Events tables
-- [ ] Set up database (MySQL via amazon lightsail)
-- [ ] Seed database with initial data (if needed)
+- [✅] Design and implement SQL schema: Users and Events tables
+- [✅] Set up database (MySQL via amazon lightsail)
+- [✅] Seed database with initial data (if needed)
 
 ### Flask Web Dashboard
 - [ ] Initialize Flask app with basic route
