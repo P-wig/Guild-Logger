@@ -15,7 +15,10 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 ### Flask Web Dashboard
 - [✅] Basic Flask app and route structure scaffolded
 - [✅] Home page renders with React integration and navigation tabs
-- [ ] Build admin dashboard:
+- [ ] Dashboard routes:
+  - [✅] Home route
+  - [ ] Guild route
+- [ ] Build admin dashboard features:
   - [ ] List users with details
   - [ ] Edit user data (join date, status, etc.)
   - [ ] List and edit raid events and participants

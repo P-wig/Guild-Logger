@@ -5,15 +5,9 @@ function App() {
       <div style={{ marginBottom: "30px" }}>
         <a href="/" style={{ margin: "0 10px" }}>
           <button>Home</button>
-        </a>
-        <a href="/about" style={{ margin: "0 10px" }}>
-          <button>About</button>
-        </a>
-        <a href="/askme" style={{ margin: "0 10px" }}>
-          <button>Ask</button>
-        </a>
-        <a href="/create_speech" style={{ margin: "0 10px" }}>
-          <button>Create Speech</button>
+        </a>   
+        <a href="/guild" style={{ margin: "0 10px" }}>
+          <button>Guild</button>
         </a>
       </div>
       <p>Select a tab to navigate to that route.</p>
