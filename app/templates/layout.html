@@ -15,7 +15,13 @@
       <nav>
         <ul class="menu">
           <li><a href="{{ url_for('main.render_home_page') }}">Home</a></li>
-          <li><a href="{{ url_for('guild.render_guild_page') }}">Guild</a></li>
+          <li><a href="{{ url_for('admin.render_admin_page') }}">Admin</a></li>
+          <li>
+            <a href="{{ url_for('auth.login') }}" style="padding: 10px 20px; font-size: 1.1em; background-color: #5865F2; color: white; border: none; border-radius: 5px; text-decoration: none; display: inline-block;">
+              Login with Discord
+            </a>
+          </li>
+          
         </ul>
       </nav>
     </div>

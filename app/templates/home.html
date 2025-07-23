@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 
 {% block content %}
+  <div style="text-align: center; margin-top: 40px;">
+    <a href="{{ url_for('auth.login') }}">
+      <button style="padding: 10px 20px; font-size: 1.1em; background-color: #5865F2; color: white; border: none; border-radius: 5px;">
+        Login with Discord
+      </button>
+    </a>
+  </div>
   <div id="root"></div>
   <script type="text/babel" src="{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}

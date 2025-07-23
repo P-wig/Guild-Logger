@@ -6,8 +6,8 @@ function App() {
         <a href="/" style={{ margin: "0 10px" }}>
           <button>Home</button>
         </a>   
-        <a href="/guild" style={{ margin: "0 10px" }}>
-          <button>Guild</button>
+        <a href="/admin" style={{ margin: "0 10px" }}>
+          <button>Admin</button>
         </a>
       </div>
       <p>Select a tab to navigate to that route.</p>

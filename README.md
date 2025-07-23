@@ -1,5 +1,7 @@
 # GuildLogger Development Plan
 
+# GuildLogger Development Plan
+
 ## 📦 Project Overview
 A Flask web app and Discord bot for monitoring, editing, and tracking Discord server user data and raid event participation via a MySQL database.
 
@@ -15,16 +17,19 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 ### Flask Web Dashboard
 - [✅] Basic Flask app and route structure scaffolded
 - [✅] Home page renders with React integration and navigation tabs
-- [ ] Dashboard routes:
-  - [✅] Home route
-  - [ ] Guild route
+- [✅] Home route implemented
+- [✅] Admin route (formerly Guild) implemented
 - [ ] Build admin dashboard features:
   - [ ] List users with details
   - [ ] Edit user data (join date, status, etc.)
   - [ ] List and edit raid events and participants
   - [ ] Filter/search users/events
-- [ ] Implement user authentication for dashboard access
+- [✅] Implement Discord OAuth2 login for authentication
+- [✅] Restrict dashboard access to approved Discord users (admin/mods)
 - [ ] Apply consistent styling using CSS and React components
+- [ ] Add logout functionality
+- [ ] Protect all admin routes with login/authorization checks
+- [ ] Add user feedback for login/logout/errors
 
 ### Discord Bot Integration
 - [✅] Set up virtual environment and install Flask + Discord.py
@@ -39,11 +44,17 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [ ] Deploy to Amazon Elastic Beanstalk (EBS) after Flask dashboard is complete
 - [ ] Configure AWS networking/security for bot and database communication
 
-## 📝 Next Steps
-- Complete Flask dashboard CRUD functionality for users and events
-- Add authentication and admin controls
+## 📝 Next Steps & Reminders
+- Complete CRUD functionality for users and events in the admin dashboard
+- Add and test logout route and session management
+- Ensure all admin routes are protected by login and authorization checks
 - Integrate Discord bot with database for live event tracking
 - Prepare deployment scripts and AWS resources after core features are ready
+- **Update `DISCORD_REDIRECT_URI` in `.env` and Discord Developer Portal when deploying to AWS**
+- **Add your production domain to Discord OAuth2 Redirects before going live**
+- Use `.env` for tokens/keys and sensitive config
+- Keep bot and web app loosely coupled
+- Prioritize data integrity, admin usability, and security
 
 ## 📌 Notes
 - Use `.env` for tokens/keys and sensitive config

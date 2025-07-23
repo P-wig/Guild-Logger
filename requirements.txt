@@ -20,3 +20,4 @@ WTForms==3.0.1
 openai==1.65.4
 discord.py==2.3.2
 mysql-connector-python==8.4.0
+authlib==1.3.0

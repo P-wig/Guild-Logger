@@ -1,7 +1,10 @@
 import sys
+import os
 import importlib
+import inspect
 sys.dont_write_bytecode = True
 from flask import Flask
+from authlib.integrations.flask_client import OAuth
 
 
 def create_app():
@@ -9,16 +12,7 @@ def create_app():
     app.secret_key = 'development key'
     app.config['SECRET_KEY']='LongAndRandomSecretKey'
 
-    # Mail config
-    import os
-    mail_user_name = os.getenv('GMAIL_USER_NAME')
-    mail_app_password = os.getenv('GMAIL_APP_PASSWORD')
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 465
-    app.config['MAIL_USERNAME'] = mail_user_name
-    app.config['MAIL_PASSWORD'] = mail_app_password
-    app.config['MAIL_USE_TLS'] = False
-    app.config['MAIL_USE_SSL'] = True
+    oauth = OAuth(app)
 
     # Dynamically import all route modules and register their blueprints
     routes_dir = os.path.join(os.path.dirname(__file__), 'routes') # find the routes directory
@@ -27,7 +21,11 @@ def create_app():
             module_name = f"app.routes.{filename[:-3]}" # constructs the module name by removing the .py extension
             module = importlib.import_module(module_name) # imports the module dynamically
             if hasattr(module, "get_blueprint"): # checks module for get_blueprint function
-                app.register_blueprint(module.get_blueprint())
+                # Check if get_blueprint expects an argument (for oauth)
+                if len(inspect.signature(module.get_blueprint).parameters) == 1:
+                    app.register_blueprint(module.get_blueprint(oauth))
+                else:
+                    app.register_blueprint(module.get_blueprint())
             else:
                 print(f"Module {module_name} does not have a get_blueprint function")
         else:
