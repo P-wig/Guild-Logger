@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div style="max-width: 600px; margin: 60px auto; text-align: center;">
+    <h2 style="color: red;">Access Denied: You are not an admin.</h2>
+    <p><a href="{{ url_for('main.render_home_page') }}">Return Home</a></p>
+  </div>
+{% endblock %}

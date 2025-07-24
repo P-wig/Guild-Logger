@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for, session, current_app
+from flask import Blueprint, redirect, url_for, render_template, session
 from authlib.integrations.flask_client import OAuth
 import os
 import sys 
@@ -32,8 +32,9 @@ def get_blueprint(oauth):
         token = discord.authorize_access_token()
         user = discord.get('users/@me').json()
         allowed_users = [uid.strip() for uid in os.getenv('ALLOWED_USERS', '').split(',')]
+
         if user['id'] not in allowed_users:
-            return "Access denied: You are not an admin.", 403
+            return render_template('access_denied.html'), 403
         session['user'] = user
         return redirect(url_for('main.render_home_page'))
 

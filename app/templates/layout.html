@@ -15,11 +15,21 @@
       <nav>
         <ul class="menu">
           <li><a href="{{ url_for('main.render_home_page') }}">Home</a></li>
-          <li><a href="{{ url_for('admin.render_admin_page') }}">Admin</a></li>
+          {% if session.get('user') %}
+            <li><a href="{{ url_for('admin.render_admin_page') }}">Admin</a></li>
+          {% endif %}
           <li>
-            <a href="{{ url_for('auth.login') }}" style="padding: 10px 20px; font-size: 1.1em; background-color: #5865F2; color: white; border: none; border-radius: 5px; text-decoration: none; display: inline-block;">
-              Login with Discord
-            </a>
+            {% if session.get('user') %}
+              <img src="https://cdn.discordapp.com/avatars/{{ session['user']['id'] }}/{{ session['user']['avatar'] }}.png"
+                  alt="Discord Avatar"
+                  style="height:32px; width:32px; border-radius:50%; vertical-align:middle;">
+              <span style="margin-left:8px;">{{ session['user']['username'] }}</span>
+              <a href="{{ url_for('auth.logout') }}" style="margin-left:12px; color:#5865F2;">Logout</a>
+            {% else %}
+              <a href="{{ url_for('auth.login') }}" style="padding: 10px 20px; font-size: 1.1em; background-color: #5865F2; color: white; border: none; border-radius: 5px; text-decoration: none; display: inline-block;">
+                Login with Discord
+              </a>
+            {% endif %}
           </li>
         </ul>
       </nav>
