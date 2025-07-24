@@ -2,15 +2,17 @@ import sys
 import os
 import importlib
 import inspect
+from dotenv import load_dotenv
 sys.dont_write_bytecode = True
 from flask import Flask
 from authlib.integrations.flask_client import OAuth
 
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = 'development key'
-    app.config['SECRET_KEY']='LongAndRandomSecretKey'
+    app.secret_key = os.getenv('SECRET_KEY')
+    app.config['SECRET_KEY'] = app.secret_key
 
     oauth = OAuth(app)
 

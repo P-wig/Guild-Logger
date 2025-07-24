@@ -17,10 +17,15 @@ def get_blueprint(oauth):
         client_kwargs={'scope': 'identify'},
     )
 
-    @auth_blueprint.route('/login')
+    @auth_blueprint.route('/auth/discord/login')
     def login():
         redirect_uri = os.getenv('DISCORD_REDIRECT_URI')
         return discord.authorize_redirect(redirect_uri)
+
+    @auth_blueprint.route('/auth/discord/logout')
+    def logout():
+        session.pop('user', None)
+        return redirect(url_for('main.render_home_page'))
 
     @auth_blueprint.route('/auth/discord/callback')
     def callback():
