@@ -39,7 +39,7 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [ ] Automate user/event updates in the database
 
 ### Deployment & DevOps
-- [ ] Containerize app with Dockerfile
+- [✅] Containerize app with Dockerfile
 - [ ] Prepare for AWS deployment (Dockerrun.aws.json, environment variables)
 - [ ] Deploy to Amazon Elastic Beanstalk (EBS) after Flask dashboard is complete
 - [ ] Configure AWS networking/security for bot and database communication

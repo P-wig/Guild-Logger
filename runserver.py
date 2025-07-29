@@ -2,7 +2,7 @@
 # Instructions for running and debugging this python file in VSCode
 # The program assumes that you have python3 and pip3 installed on your machine.
 # In the VSCode terminal window type the following:
-#    pip3 install -r requirements.txt
+#    pip install -r requirements.txt
 
 # In VSCode, press Cmd-Shift-P (on Mac) or Ctrl-Shift-P (on Windows).
 #   In the command selection text box, type "Python Create"
@@ -21,4 +21,4 @@ from app import create_app
 
 app = create_app()
 print(app.url_map)
-app.run(host="127.0.0.1", port=5000, debug=True, use_reloader=False)
+app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
