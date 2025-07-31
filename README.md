@@ -38,6 +38,21 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [ ] Sync event participation data from Discord to database
 - [ ] Automate user/event updates in the database
 
+### Web Security Checkpoints
+- [ ] Ensure all sensitive routes (admin, edit, etc.) have server-side authentication and authorization checks.
+- [ ] Never rely solely on hiding UI elements for security—always check permissions on the backend.
+- [ ] Validate all user input on the server.
+- [ ] Use HTTPS in production to protect user sessions.
+- [✅] Use strong, secret session keys and environment variables for sensitive config.
+
+### Planned Features for Multi-Server Support
+- [ ] Refactor app to support multiple Discord servers (guilds)
+- [ ] Use Discord OAuth2 to fetch list of servers the user owns or manages
+- [ ] Allow server owners to select and manage their servers via a dropdown menu in the dashboard
+- [ ] Dynamically determine authorized users based on Discord server ownership/roles, not static .env list
+- [ ] Update database schema to associate users/events with specific Discord servers (guild IDs)
+- [ ] Add admin dashboard features for server owners to manage their own server’s data
+
 ### Deployment & DevOps
 - [✅] Containerize app with Dockerfile
 - [ ] Prepare for AWS deployment (Dockerrun.aws.json, environment variables)
