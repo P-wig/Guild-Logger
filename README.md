@@ -1,9 +1,7 @@
 # GuildLogger Development Plan
 
-# GuildLogger Development Plan
-
 ## 📦 Project Overview
-A Flask web app and Discord bot for monitoring, editing, and tracking Discord server user data and raid event participation via a MySQL database.
+A Flask web app and Discord bot for monitoring, editing, and tracking Discord server user data and raid event participation via a managed SQL database.
 
 ## ✅ Current Progress
 
@@ -11,8 +9,8 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Identify required user data: Discord user ID, join date, active/retired status
 - [✅] Identify required event data: raid events, participant user IDs
 - [✅] Design and implement SQL schema: Users, Events, Event_Attendees, Former_Users tables
-- [✅] Set up MySQL database on Amazon Lightsail
-- [✅] Seed database with initial user/event data
+- [ ] Set up managed database on Railway (MySQL or PostgreSQL) or PlanetScale (MySQL)
+- [ ] Seed database with initial user/event data
 
 ### Flask Web Dashboard
 - [✅] Basic Flask app and route structure scaffolded
@@ -20,10 +18,13 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Home route implemented
 - [✅] Admin route (formerly Guild) implemented
 - [ ] Build admin dashboard features:
-  - [ ] List users with details
-  - [ ] Edit user data (join date, status, etc.)
-  - [ ] List and edit raid events and participants
-  - [ ] Filter/search users/events
+  - [ ] Create a tabbed interface with a sub-tab for each database table (`users`, `events`, `event_attendees`, `former_users`)
+  - [ ] For each table, display all rows in a scrollable menu/list UI
+  - [ ] For each row, add an "Edit" button that opens a form or modal for editing that row’s data
+  - [ ] On save, update the row in the database and refresh the UI
+  - [ ] Add "Add New" and "Delete" buttons for CRUD operations as needed
+  - [ ] Ensure all changes are reflected in the database in real time
+  - [ ] Secure all endpoints with server-side authentication and authorization
 - [✅] Implement Discord OAuth2 login for authentication
 - [✅] Restrict dashboard access to approved Discord users (admin/mods)
 - [ ] Apply consistent styling using CSS and React components
@@ -53,25 +54,43 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [ ] Update database schema to associate users/events with specific Discord servers (guild IDs)
 - [ ] Add admin dashboard features for server owners to manage their own server’s data
 
-### Deployment & DevOps
+### Deployment & DevOps (Railway)
 - [✅] Containerize app with Dockerfile
-- [ ] Prepare for AWS deployment (Dockerrun.aws.json, environment variables)
-- [ ] Deploy to Amazon Elastic Beanstalk (EBS) after Flask dashboard is complete
-- [ ] Configure AWS networking/security for bot and database communication
+- [ ] Create a new Railway project and connect your GitHub repo or upload your code
+- [ ] Add a Railway-managed database (MySQL or PostgreSQL) or connect to PlanetScale
+- [ ] Set environment variables in Railway dashboard (no `.env` in repo)
+- [ ] Deploy Flask app and Discord bot via Railway’s Docker support
+- [ ] Update Discord OAuth2 Redirect URI to Railway’s provided domain
 
 ## 📝 Next Steps & Reminders
 - Complete CRUD functionality for users and events in the admin dashboard
 - Add and test logout route and session management
 - Ensure all admin routes are protected by login and authorization checks
 - Integrate Discord bot with database for live event tracking
-- Prepare deployment scripts and AWS resources after core features are ready
-- **Update `DISCORD_REDIRECT_URI` in `.env` and Discord Developer Portal when deploying to AWS**
-- **Add your production domain to Discord OAuth2 Redirects before going live**
-- Use `.env` for tokens/keys and sensitive config
+- Prepare deployment scripts for Railway
+- **Update `DISCORD_REDIRECT_URI` in Railway environment variables and Discord Developer Portal when deploying**
+- **Add your Railway production domain to Discord OAuth2 Redirects before going live**
+- Use Railway’s environment variable dashboard for tokens/keys and sensitive config
 - Keep bot and web app loosely coupled
 - Prioritize data integrity, admin usability, and security
 
 ## 📌 Notes
-- Use `.env` for tokens/keys and sensitive config
+- Use Railway’s environment variable dashboard for tokens/keys and sensitive config
 - Keep bot and web app loosely coupled
-- Prioritize data integrity, admin usability,
+- Prioritize data integrity, admin usability, and security
+
+---
+
+## 🚀 Railway Deployment Quickstart
+
+1. **Sign up at [Railway](https://railway.app/)** and create a new project.
+2. **Add a new service:**  
+   - Choose "Deploy from GitHub" or "Deploy from Dockerfile".
+3. **Add a database:**  
+   - Click "Add Plugin" → choose MySQL or PostgreSQL.
+   - Copy the connection string and set it as your `DB_URL` or equivalent environment variable.
+4. **Set environment variables:**  
+   - Add all secrets and config from your `.env` file in the Railway dashboard.
+5. **Deploy:**  
+   - Railway will build and deploy your app automatically.
+6. **Update your Discord OAuth2 Redirect URI** to use your Railway domain.
