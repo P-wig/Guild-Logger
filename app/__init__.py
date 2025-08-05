@@ -21,7 +21,6 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
     app.config['SECRET_KEY'] = app.secret_key
-    print("SECRET_KEY loaded:", repr(app.secret_key))
 
     oauth = OAuth(app)
 
