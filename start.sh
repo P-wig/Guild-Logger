@@ -1,13 +1,20 @@
 #!/bin/bash
-while true; do
+
+# Limit Flask retries to 3
+flask_retries=0
+while [ $flask_retries -lt 3 ]; do
     python runserver.py
-    echo "Flask crashed or exited. Restarting in 5 seconds..."
+    flask_retries=$((flask_retries + 1))
+    echo "Flask crashed or exited. Retry $flask_retries/3. Restarting in 5 seconds..."
     sleep 5
 done &
 
-while true; do
+# Limit Bot retries to 3
+bot_retries=0
+while [ $bot_retries -lt 3 ]; do
     python bot/bot.py
-    echo "Bot crashed or exited. Restarting in 5 seconds..."
+    bot_retries=$((bot_retries + 1))
+    echo "Bot crashed or exited. Retry $bot_retries/3. Restarting in 5 seconds..."
     sleep 5
 done
 
