@@ -16,8 +16,11 @@
 #
 # After the above and setting up the database, you should be able to run and debug this program
 import sys 
+import os
 sys.dont_write_bytecode = True
 from app import create_app
+
+print("ENVIRONMENT VARIABLES:", dict(os.environ))
 
 app = create_app()
 print(app.url_map)
