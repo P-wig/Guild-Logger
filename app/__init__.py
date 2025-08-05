@@ -7,7 +7,15 @@ sys.dont_write_bytecode = True
 from flask import Flask
 from authlib.integrations.flask_client import OAuth
 
-load_dotenv()
+# Check if the environment variable RAILWAY_ENVIRONMENT is set
+# If it is set, we assume we are running on Railway and do not load .env
+# This is to prevent loading .env in production where it might not be needed or could cause issues
+if os.environ.get("RAILWAY_ENVIRONMENT"):
+    # On Railway, do not load .env
+    pass
+else:
+    # Local development: load .env
+    load_dotenv()
 
 def create_app():
     app = Flask(__name__)

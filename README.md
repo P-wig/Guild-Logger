@@ -9,8 +9,8 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Identify required user data: Discord user ID, join date, active/retired status
 - [✅] Identify required event data: raid events, participant user IDs
 - [✅] Design and implement SQL schema: Users, Events, Event_Attendees, Former_Users tables
-- [ ] Set up managed database on Railway (MySQL or PostgreSQL) or PlanetScale (MySQL)
-- [ ] Seed database with initial user/event data
+- [✅] Set up managed database on Railway (MySQL or PostgreSQL) or PlanetScale (MySQL)
+- [✅] Seed database with initial user/event data
 
 ### Flask Web Dashboard
 - [✅] Basic Flask app and route structure scaffolded
@@ -56,11 +56,13 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 
 ### Deployment & DevOps (Railway)
 - [✅] Containerize app with Dockerfile
-- [ ] Create a new Railway project and connect your GitHub repo or upload your code
-- [ ] Add a Railway-managed database (MySQL or PostgreSQL) or connect to PlanetScale
-- [ ] Set environment variables in Railway dashboard (no `.env` in repo)
+- [✅] Create a new Railway project and connect your GitHub repo or upload your code
+- [✅] Add a Railway-managed database (MySQL)
+- [✅] Import SQL data into Railway database using the MySQL CLI
+- [✅] Set environment variables in Railway dashboard
 - [ ] Deploy Flask app and Discord bot via Railway’s Docker support
 - [ ] Update Discord OAuth2 Redirect URI to Railway’s provided domain
+
 
 ## 📝 Next Steps & Reminders
 - Complete CRUD functionality for users and events in the admin dashboard
@@ -85,9 +87,9 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 
 1. **Sign up at [Railway](https://railway.app/)** and create a new project.
 2. **Add a new service:**  
-   - Choose "Deploy from GitHub" or "Deploy from Dockerfile".
+   - Choose "Deploy from GitHub".
 3. **Add a database:**  
-   - Click "Add Plugin" → choose MySQL or PostgreSQL.
+   - Click "Add Plugin" → choose MySQL.
    - Copy the connection string and set it as your `DB_URL` or equivalent environment variable.
 4. **Set environment variables:**  
    - Add all secrets and config from your `.env` file in the Railway dashboard.
