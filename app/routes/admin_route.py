@@ -30,4 +30,42 @@ def get_blueprint():
         cursor.close()
         return jsonify(users_list)
 
+    @admin_blueprint.route('/api/events')
+    def api_events():
+        db = current_app.get_db()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        offset = (page - 1) * per_page
+        cursor.execute('SELECT * FROM events LIMIT %s OFFSET %s', (per_page, offset))
+        events_list = cursor.fetchall()
+        cursor.close()
+        return jsonify(events_list)
+
+    @admin_blueprint.route('/api/events/<int:event_id>/attendees')
+    def api_event_attendees(event_id):
+        db = current_app.get_db()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('''
+            SELECT u.user_id
+            FROM event_attendees ea
+            JOIN users u ON ea.user_id = u.user_id
+            WHERE ea.event_id = %s
+        ''', (event_id,))
+        attendees = cursor.fetchall()
+        cursor.close()
+        return jsonify(attendees)
+
+    @admin_blueprint.route('/api/former_users')
+    def api_former_users():
+        db = current_app.get_db()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        offset = (page - 1) * per_page
+        cursor.execute('SELECT * FROM former_users LIMIT %s OFFSET %s', (per_page, offset))
+        former_users_list = cursor.fetchall()
+        cursor.close()
+        return jsonify(former_users_list)
+
     return admin_blueprint
