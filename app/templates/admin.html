@@ -1,8 +1,14 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <div class="container" style="text-align: center; margin-top: 50px;">
-    <h2 class="logo" style="color: #4e73df;">Admin Portal</h2>
-    <p> Add admin features here.</p>
-  </div>
+<div class="container" style="text-align: center; margin-top: 50px;">
+  <h2 class="logo" style="color: #4e73df;">Admin Portal</h2>
+  <ul class="nav nav-tabs" id="adminTabs">
+    <li class="nav-item">
+      <a class="nav-link active" id="users-tab" href="#" onclick="showUsers()">Users</a>
+    </li>
+  </ul>
+  <div id="tab-content" style="margin-top: 30px;"></div>
+</div>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 {% endblock %}

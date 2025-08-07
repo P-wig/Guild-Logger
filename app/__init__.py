@@ -7,6 +7,7 @@ sys.dont_write_bytecode = True
 from flask import Flask
 from authlib.integrations.flask_client import OAuth
 
+
 # Check if the environment variable RAILWAY_ENVIRONMENT is set
 # If it is set, we assume we are running on Railway and do not load .env
 # This is to prevent loading .env in production where it might not be needed or could cause issues
@@ -21,6 +22,15 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
     app.config['SECRET_KEY'] = app.secret_key
+
+    app.config['DB_HOST'] = os.getenv('DB_HOST')
+    app.config['DB_PORT'] = os.getenv('DB_PORT')
+    app.config['DB_USER'] = os.getenv('DB_USER')
+    app.config['DB_PASSWORD'] = os.getenv('DB_PASSWORD')
+    app.config['DB_NAME'] = os.getenv('DB_NAME')
+
+    from app.db import get_db
+    app.get_db = get_db
 
     oauth = OAuth(app)
 
