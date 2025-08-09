@@ -18,8 +18,8 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Home route implemented
 - [✅] Admin route (formerly Guild) implemented
 - [ ] Build admin dashboard features:
-  - [ ] Create a tabbed interface with a sub-tab for each database table (`users`, `events`, `event_attendees`, `former_users`)
-  - [ ] For each table, display all rows in a scrollable menu/list UI
+  - [✅] Create a tabbed interface with a sub-tab for each database table (`users`, `events`, `event_attendees`, `former_users`)
+  - [✅] For each table, display all rows in a scrollable menu/list UI
   - [ ] For each row, add an "Edit" button that opens a form or modal for editing that row’s data
   - [ ] On save, update the row in the database and refresh the UI
   - [ ] Add "Add New" and "Delete" buttons for CRUD operations as needed

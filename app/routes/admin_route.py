@@ -4,6 +4,7 @@ import sys
 sys.dont_write_bytecode = True
 from flask import Blueprint, render_template, session, jsonify, current_app, request
 import pymysql
+from datetime import datetime
 
 def get_blueprint():
     admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
@@ -26,9 +27,11 @@ def get_blueprint():
         per_page = int(request.args.get('per_page', 10))
         offset = (page - 1) * per_page
         cursor.execute('SELECT * FROM users LIMIT %s OFFSET %s', (per_page, offset)) # needs to update when implementing multi server support
-        users_list = cursor.fetchall()
-        cursor.close()
-        return jsonify(users_list)
+        users = cursor.fetchall()
+        for user in users:
+            user['user_id'] = str(user['user_id'])
+            user['guild_id'] = str(user['guild_id'])
+        return jsonify(users)
 
     @admin_blueprint.route('/api/events')
     def api_events():
@@ -67,5 +70,33 @@ def get_blueprint():
         former_users_list = cursor.fetchall()
         cursor.close()
         return jsonify(former_users_list)
+
+    @admin_blueprint.route('/api/users/<int:user_id>', methods=['PUT'])
+    def update_user(user_id):
+        db = current_app.get_db()
+        data = request.get_json()
+        cursor = db.cursor()
+        if data['status'] not in ('active', 'retired'):
+            return jsonify({'success': False, 'error': 'Invalid status'}), 400
+        try:
+            datetime.strptime(data['join_date'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid date format'}), 400
+        cursor.execute(
+            "UPDATE users SET join_date=%s, status=%s WHERE user_id=%s",
+            (data['join_date'], data['status'], user_id)
+        )
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
+
+    @admin_blueprint.route('/api/users/<int:user_id>', methods=['DELETE'])
+    def delete_user(user_id):
+        db = current_app.get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM users WHERE user_id=%s", (user_id,))
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
 
     return admin_blueprint
