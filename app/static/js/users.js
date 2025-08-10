@@ -1,3 +1,7 @@
+let currentUsers = [];
+let editingUserId = null;
+let userToDelete = null;
+
 // Function to fetch and display users in a table
 function showUsers(page = 1, perPage = 10) {
   // Make a GET request to the /api/users endpoint with pagination
@@ -59,95 +63,28 @@ function showUsers(page = 1, perPage = 10) {
         `;
       }
 
+      // Add User button and form
+      html += `
+        <div style="margin-bottom:20px;text-align:center;">
+          <button onclick="toggleAddUserForm()">Add User</button>
+          <div id="add-user-form" style="display:none;margin-top:10px;">
+            <input type="text" id="add-user-id" placeholder="User ID (as string)">
+            <input type="date" id="add-join-date" placeholder="Join Date">
+            <select id="add-status">
+              <option value="active">active</option>
+              <option value="retired">retired</option>
+            </select>
+            <button onclick="addUser()">Submit</button>
+            <button onclick="toggleAddUserForm()">Cancel</button>
+          </div>
+        </div>
+      `;
+
       // Insert the generated HTML into the page
       document.getElementById('tab-content').innerHTML = html;
     });
 }
 
-// Function to fetch and display events in a table
-function showEvents(page = 1, perPage = 10) {
-  fetch(`/admin/api/events?page=${page}&per_page=${perPage}`)
-    .then(response => response.json())
-    .then(events => {
-      let html = '<div class="event-cards" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
-      events.forEach(event => {
-        html += `
-          <div class="event-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;">
-            <strong>Event ID:</strong> ${event.event_id}<br>
-            <strong>Host ID:</strong> ${event.host_id}<br>
-            <button onclick="showEventAttendees(${event.event_id}, this)">Show Attendees</button>
-            <div class="attendees-list" id="attendees-${event.event_id}" style="margin-top:10px; display:none;"></div>
-          </div>
-        `;
-      });
-      html += '</div>';
-      // Pagination controls
-      html += `
-        <div style="margin-top:20px;">
-          <button onclick="showEvents(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
-          <span style="margin:0 10px;">Page ${page}</span>
-          <button onclick="showEvents(${page + 1}, ${perPage})" ${events.length < perPage ? 'disabled' : ''}>Next</button>
-        </div>
-      `;
-      document.getElementById('tab-content').innerHTML = html;
-    });
-}
-
-// Add this function to fetch and display attendees for an event
-function showEventAttendees(eventId, btn) {
-  const attendeesDiv = document.getElementById(`attendees-${eventId}`);
-  if (attendeesDiv.style.display === "none") {
-    fetch(`/admin/api/events/${eventId}/attendees`)
-      .then(response => response.json())
-      .then(attendees => {
-        if (attendees.length === 0) {
-          attendeesDiv.innerHTML = "<em>No attendees found.</em>";
-        } else {
-          attendeesDiv.innerHTML = attendees.map(a =>
-            `<div style="border-bottom:1px solid #eee;padding:4px 0;">
-              <strong>User ID:</strong> ${a.user_id}<br>
-            </div>`
-          ).join('');
-        }
-        attendeesDiv.style.display = "block";
-        btn.textContent = "Hide Attendees";
-      });
-  } else {
-    attendeesDiv.style.display = "none";
-    btn.textContent = "Show Attendees";
-  }
-}
-
-function showFormerUsers(page = 1, perPage = 10) {
-  fetch(`/admin/api/former_users?page=${page}&per_page=${perPage}`)
-    .then(response => response.json())
-    .then(users => {
-      let html = '<div class="former-user-cards" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
-      users.forEach(user => {
-        html += `
-          <div class="former-user-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;">
-            <strong>User ID:</strong> ${user.user_id}<br>
-            <strong>Left Date:</strong> ${user.left_date}<br>
-          </div>
-        `;
-      });
-      html += '</div>';
-      // Pagination controls
-      html += `
-        <div style="margin-top:20px;">
-          <button onclick="showFormerUsers(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
-          <span style="margin:0 10px;">Page ${page}</span>
-          <button onclick="showFormerUsers(${page + 1}, ${perPage})" ${users.length < perPage ? 'disabled' : ''}>Next</button>
-        </div>
-      `;
-      document.getElementById('tab-content').innerHTML = html;
-    });
-}
-
-
-let currentUsers = [];
-let editingUserId = null;
-let userToDelete = null;
 
 function editUser(userId) {
   console.log("editUser called for", userId);
@@ -204,5 +141,62 @@ function deleteUserConfirmed() {
     .then(() => {
       userToDelete = null;
       showUsers();
+    });
+}
+
+// Toggle Add User form visibility
+function toggleAddUserForm() {
+  const form = document.getElementById('add-user-form');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+  } else {
+    form.style.display = 'none';
+  }
+}
+
+// Add a new user
+function addUser() {
+  const userId = document.getElementById('add-user-id').value.trim();
+  const joinDate = document.getElementById('add-join-date').value;
+  const status = document.getElementById('add-status').value;
+
+  if (!/^\d{17,20}$/.test(userId)) {
+    alert('Please enter a valid Discord User ID (as a string of digits).');
+    return;
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(joinDate)) {
+    alert('Please enter a valid join date in YYYY-MM-DD format.');
+    return;
+  }
+  if (!['active', 'retired'].includes(status)) {
+    alert('Invalid status.');
+    return;
+  }
+  if (currentUsers.some(u => u.user_id === userId)) {
+    alert('A user with this ID already exists.');
+    return;
+  }
+
+  // placeholder guildId, this will be fetched from discord api in final instalment
+  const guildId = '732755252847050822';
+
+  fetch('/admin/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: userId,
+      guild_id: guildId,
+      join_date: joinDate,
+      status: status
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        toggleAddUserForm();
+        showUsers();
+      } else {
+        alert('Failed to add user: ' + (data.error || 'Unknown error'));
+      }
     });
 }

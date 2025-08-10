@@ -17,7 +17,8 @@ def get_blueprint():
             return render_template('access_denied.html'), 403
         
         return render_template('admin.html')
-
+    
+    # User API routes
     @admin_blueprint.route('/api/users')
     def api_users():
         db = current_app.get_db()
@@ -32,44 +33,6 @@ def get_blueprint():
             user['user_id'] = str(user['user_id'])
             user['guild_id'] = str(user['guild_id'])
         return jsonify(users)
-
-    @admin_blueprint.route('/api/events')
-    def api_events():
-        db = current_app.get_db()
-        cursor = db.cursor(pymysql.cursors.DictCursor)
-        page = int(request.args.get('page', 1))
-        per_page = int(request.args.get('per_page', 10))
-        offset = (page - 1) * per_page
-        cursor.execute('SELECT * FROM events LIMIT %s OFFSET %s', (per_page, offset))
-        events_list = cursor.fetchall()
-        cursor.close()
-        return jsonify(events_list)
-
-    @admin_blueprint.route('/api/events/<int:event_id>/attendees')
-    def api_event_attendees(event_id):
-        db = current_app.get_db()
-        cursor = db.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('''
-            SELECT u.user_id
-            FROM event_attendees ea
-            JOIN users u ON ea.user_id = u.user_id
-            WHERE ea.event_id = %s
-        ''', (event_id,))
-        attendees = cursor.fetchall()
-        cursor.close()
-        return jsonify(attendees)
-
-    @admin_blueprint.route('/api/former_users')
-    def api_former_users():
-        db = current_app.get_db()
-        cursor = db.cursor(pymysql.cursors.DictCursor)
-        page = int(request.args.get('page', 1))
-        per_page = int(request.args.get('per_page', 10))
-        offset = (page - 1) * per_page
-        cursor.execute('SELECT * FROM former_users LIMIT %s OFFSET %s', (per_page, offset))
-        former_users_list = cursor.fetchall()
-        cursor.close()
-        return jsonify(former_users_list)
 
     @admin_blueprint.route('/api/users/<int:user_id>', methods=['PUT'])
     def update_user(user_id):
@@ -98,5 +61,71 @@ def get_blueprint():
         db.commit()
         cursor.close()
         return jsonify({'success': True})
+
+    @admin_blueprint.route('/api/users', methods=['POST'])
+    def add_user():
+        db = current_app.get_db()
+        data = request.get_json()
+        cursor = db.cursor()
+        # Validate input
+        if data['status'] not in ('active', 'retired'):
+            return jsonify({'success': False, 'error': 'Invalid status'}), 400
+        try:
+            datetime.strptime(data['join_date'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid date format'}), 400
+        try:
+            cursor.execute(
+                "INSERT INTO users (user_id, guild_id, join_date, status) VALUES (%s, %s, %s, %s)",
+                (str(data['user_id']), str(data['guild_id']), data['join_date'], data['status'])
+            )
+            db.commit()
+        except Exception as e:
+            if "Duplicate entry" in str(e):
+                return jsonify({'success': False, 'error': 'User ID already exists.'}), 400
+            return jsonify({'success': False, 'error': str(e)}), 400
+        finally:
+            cursor.close()
+        return jsonify({'success': True})
+    
+    # Events API routes
+    @admin_blueprint.route('/api/events')
+    def api_events():
+        db = current_app.get_db()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        offset = (page - 1) * per_page
+        cursor.execute('SELECT * FROM events LIMIT %s OFFSET %s', (per_page, offset))
+        events_list = cursor.fetchall()
+        cursor.close()
+        return jsonify(events_list)
+
+    @admin_blueprint.route('/api/events/<int:event_id>/attendees')
+    def api_event_attendees(event_id):
+        db = current_app.get_db()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        cursor.execute('''
+            SELECT u.user_id
+            FROM event_attendees ea
+            JOIN users u ON ea.user_id = u.user_id
+            WHERE ea.event_id = %s
+        ''', (event_id,))
+        attendees = cursor.fetchall()
+        cursor.close()
+        return jsonify(attendees)
+
+    # Former Users API routes
+    @admin_blueprint.route('/api/former_users')
+    def api_former_users():
+        db = current_app.get_db()
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        offset = (page - 1) * per_page
+        cursor.execute('SELECT * FROM former_users LIMIT %s OFFSET %s', (per_page, offset))
+        former_users_list = cursor.fetchall()
+        cursor.close()
+        return jsonify(former_users_list)
 
     return admin_blueprint
