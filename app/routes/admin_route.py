@@ -34,8 +34,8 @@ def get_blueprint():
             user['guild_id'] = str(user['guild_id'])
         return jsonify(users)
 
-    @admin_blueprint.route('/api/users/<int:user_id>', methods=['PUT'])
-    def update_user(user_id):
+    @admin_blueprint.route('/api/users/<user_id>/<guild_id>', methods=['PUT'])
+    def update_user(user_id, guild_id):
         db = current_app.get_db()
         data = request.get_json()
         cursor = db.cursor()
@@ -46,8 +46,8 @@ def get_blueprint():
         except ValueError:
             return jsonify({'success': False, 'error': 'Invalid date format'}), 400
         cursor.execute(
-            "UPDATE users SET join_date=%s, status=%s WHERE user_id=%s",
-            (data['join_date'], data['status'], user_id)
+            "UPDATE users SET join_date=%s, status=%s WHERE user_id=%s AND guild_id=%s",
+            (data['join_date'], data['status'], user_id, guild_id)
         )
         db.commit()
         cursor.close()
@@ -119,13 +119,68 @@ def get_blueprint():
     @admin_blueprint.route('/api/former_users')
     def api_former_users():
         db = current_app.get_db()
-        cursor = db.cursor(pymysql.cursors.DictCursor)
-        page = int(request.args.get('page', 1))
-        per_page = int(request.args.get('per_page', 10))
+        cursor = db.cursor( pymysql.cursors.DictCursor )
+        page = int( request.args.get('page', 1) )
+        per_page = int( request.args.get('per_page', 10) )
         offset = (page - 1) * per_page
         cursor.execute('SELECT * FROM former_users LIMIT %s OFFSET %s', (per_page, offset))
         former_users_list = cursor.fetchall()
+        for user in former_users_list:
+            user['user_id'] = str(user['user_id'])
+            user['guild_id'] = str(user['guild_id'])
         cursor.close()
         return jsonify(former_users_list)
+    
+    # Add a former user
+    @admin_blueprint.route('/api/former_users', methods=['POST'])
+    def add_former_user():
+        db = current_app.get_db()
+        data = request.get_json()
+        cursor = db.cursor()
+        # Validate input
+        try:
+            datetime.strptime(data['left_date'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid date format'}), 400
+        try:
+            cursor.execute(
+                "INSERT INTO former_users (user_id, guild_id, left_date) VALUES (%s, %s, %s)",
+                (str(data['user_id']), str(data['guild_id']), data['left_date'])
+            )
+            db.commit()
+        except Exception as e:
+            if "Duplicate entry" in str(e):
+                return jsonify({'success': False, 'error': 'Former user already exists.'}), 400
+            return jsonify({'success': False, 'error': str(e)}), 400
+        finally:
+            cursor.close()
+        return jsonify({'success': True})
+
+    # Delete a former user
+    @admin_blueprint.route('/api/former_users/<user_id>/<guild_id>', methods=['DELETE'])
+    def delete_former_user(user_id, guild_id):
+        db = current_app.get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM former_users WHERE user_id=%s AND guild_id=%s", (user_id, guild_id))
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
+    
+    @admin_blueprint.route('/api/former_users/<user_id>/<guild_id>', methods=['PUT'])
+    def update_former_user(user_id, guild_id):
+        db = current_app.get_db()
+        data = request.get_json()
+        cursor = db.cursor()
+        try:
+            datetime.strptime(data['left_date'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid date format'}), 400
+        cursor.execute(
+            "UPDATE former_users SET left_date=%s WHERE user_id=%s AND guild_id=%s",
+            (data['left_date'], user_id, guild_id)
+        )
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
 
     return admin_blueprint

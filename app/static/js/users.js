@@ -1,6 +1,6 @@
 let currentUsers = [];
-let editingUserId = null;
 let userToDelete = null;
+let editingUser = null; // Track the user being edited
 
 // Function to fetch and display users in a table
 function showUsers(page = 1, perPage = 10) {
@@ -13,18 +13,18 @@ function showUsers(page = 1, perPage = 10) {
       let html = '<div class="user-cards" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
       // Add a card for each user
       users.forEach(user => {
-        if (editingUserId === user.user_id) {
+        if (editingUser && editingUser.user_id === user.user_id && editingUser.guild_id === user.guild_id) {
           html += `
             <div class="user-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;box-shadow:2px 2px 8px #eee;">
               <strong>User ID:</strong> ${user.user_id}<br>
-              <label>Join Date: <input type="date" id="edit-join-date-${user.user_id}" value="${user.join_date ? user.join_date.substring(0, 10) : ''}"></label><br>
+              <label>Join Date: <input type="date" id="edit-join-date-${user.user_id}-${user.guild_id}" value="${user.join_date ? user.join_date.substring(0, 10) : ''}"></label><br>
               <label>Status:
-                <select id="edit-status-${user.user_id}">
+                <select id="edit-status-${user.user_id}-${user.guild_id}">
                   <option value="active" ${user.status === 'active' ? 'selected' : ''}>active</option>
                   <option value="retired" ${user.status === 'retired' ? 'selected' : ''}>retired</option>
                 </select>
               </label><br>
-              <button onclick="saveUser('${user.user_id}')">Save</button>
+              <button onclick="saveUser('${user.user_id}', '${user.guild_id}')">Save</button>
               <button onclick="cancelEditUser()">Cancel</button>
             </div>
           `;
@@ -34,8 +34,8 @@ function showUsers(page = 1, perPage = 10) {
               <strong>User ID:</strong> ${user.user_id}<br>
               <strong>Join Date:</strong> ${user.join_date}<br>
               <strong>Status:</strong> ${user.status}<br>
-              <button onclick="editUser('${user.user_id}')">Edit</button>
-              <button onclick="confirmDeleteUser('${user.user_id}')">Delete</button>
+              <button onclick="editUser('${user.user_id}', '${user.guild_id}')">Edit</button>
+              <button onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">Delete</button>
             </div>
           `;
         }
@@ -74,6 +74,7 @@ function showUsers(page = 1, perPage = 10) {
               <option value="active">active</option>
               <option value="retired">retired</option>
             </select>
+            <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
             <button onclick="addUser()">Submit</button>
             <button onclick="toggleAddUserForm()">Cancel</button>
           </div>
@@ -86,33 +87,32 @@ function showUsers(page = 1, perPage = 10) {
 }
 
 
-function editUser(userId) {
+function editUser(userId, guildId) {
   console.log("editUser called for", userId);
-  editingUserId = userId;
+  editingUser = { user_id: userId, guild_id: guildId };
   showUsers();
 }
 
 function cancelEditUser() {
   console.log("cancelEditUser called");
-  editingUserId = null;
+  editingUser = null;
   showUsers();
 }
 
-function saveUser(userId) {
-  console.log("saveUser called for", userId);
-  const user = currentUsers.find(u => u.user_id == userId);
-  const joinDate = document.getElementById(`edit-join-date-${userId}`).value;
+function saveUser(userId, guildId) {
+  const user = currentUsers.find(u => u.user_id == userId && u.guild_id == guildId);
+  const joinDate = document.getElementById(`edit-join-date-${userId}-${guildId}`).value;
+  const status = document.getElementById(`edit-status-${userId}-${guildId}`).value;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(joinDate)) {
     alert('Please enter a valid date in YYYY-MM-DD format.');
     return;
   }
-  const status = document.getElementById(`edit-status-${userId}`).value;
   const updatedUser = {
     ...user,
     join_date: joinDate,
     status: status
   };
-  fetch(`/admin/api/users/${userId}`, {
+  fetch(`/admin/api/users/${userId}/${guildId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updatedUser)
@@ -120,13 +120,13 @@ function saveUser(userId) {
     .then(res => res.json())
     .then(() => {
       console.log("saveUser completed for", userId);
-      editingUserId = null;
+      editingUser = null;
       showUsers();
     });
 }
 
-function confirmDeleteUser(userId) {
-  userToDelete = userId;
+function confirmDeleteUser(userId, guildId) {
+  userToDelete = { user_id: userId, guild_id: guildId };
   showUsers();
 }
 
@@ -136,7 +136,7 @@ function cancelDeleteUser() {
 }
 
 function deleteUserConfirmed() {
-  fetch(`/admin/api/users/${userToDelete}`, { method: 'DELETE' })
+  fetch(`/admin/api/users/${userToDelete.user_id}/${userToDelete.guild_id}`, { method: 'DELETE' })
     .then(res => res.json())
     .then(() => {
       userToDelete = null;
@@ -159,6 +159,7 @@ function addUser() {
   const userId = document.getElementById('add-user-id').value.trim();
   const joinDate = document.getElementById('add-join-date').value;
   const status = document.getElementById('add-status').value;
+  const guildId = document.getElementById('add-guild-id').value.trim();
 
   if (!/^\d{17,20}$/.test(userId)) {
     alert('Please enter a valid Discord User ID (as a string of digits).');
@@ -172,13 +173,14 @@ function addUser() {
     alert('Invalid status.');
     return;
   }
-  if (currentUsers.some(u => u.user_id === userId)) {
-    alert('A user with this ID already exists.');
+  if (currentUsers.some(u => u.user_id === userId && u.guild_id === guildId)) {
+    alert('A user with this ID and guild already exists.');
     return;
   }
-
-  // placeholder guildId, this will be fetched from discord api in final instalment
-  const guildId = '732755252847050822';
+  if (!/^\d{17,20}$/.test(guildId)) {
+    alert('Please enter a valid Guild ID.');
+    return;
+  }
 
   fetch('/admin/api/users', {
     method: 'POST',

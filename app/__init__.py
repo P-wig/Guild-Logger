@@ -32,6 +32,14 @@ def create_app():
     from app.db import get_db
     app.get_db = get_db
 
+    # Add teardown function to close DB connection
+    @app.teardown_appcontext
+    def close_db(exception):
+        from flask import g
+        db = g.pop('db', None)
+        if db is not None:
+            db.close()
+
     oauth = OAuth(app)
 
     # Dynamically import all route modules and register their blueprints
