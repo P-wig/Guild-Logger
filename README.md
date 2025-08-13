@@ -27,7 +27,7 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
   - [ ] Secure all endpoints with server-side authentication and authorization
 - [✅] Implement Discord OAuth2 login for authentication
 - [✅] Restrict dashboard access to approved Discord users (admin/mods)
-- [ ] Apply consistent styling using CSS and React components
+- [ ] Apply consistent styling using CSS components
 - [✅] Add logout functionality
 - [✅] Protect all admin routes with login/authorization checks
 - [ ] Add user feedback for login/logout/errors

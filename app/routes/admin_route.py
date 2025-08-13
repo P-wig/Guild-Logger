@@ -98,23 +98,113 @@ def get_blueprint():
         offset = (page - 1) * per_page
         cursor.execute('SELECT * FROM events LIMIT %s OFFSET %s', (per_page, offset))
         events_list = cursor.fetchall()
+        for event in events_list:
+            event['event_id'] = str(event['event_id'])
+            event['host_id'] = str(event['host_id'])
+            event['guild_id'] = str(event['guild_id'])
         cursor.close()
         return jsonify(events_list)
+    
+    # Add an event
+    @admin_blueprint.route('/api/events', methods=['POST'])
+    def add_event():
+        db = current_app.get_db()
+        data = request.get_json()
+        cursor = db.cursor()
+        try:
+            datetime.strptime(data['date'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid date format'}), 400
+        try:
+            cursor.execute(
+                "INSERT INTO events (host_id, date, guild_id) VALUES (%s, %s, %s)",
+                (str(data['host_id']), data['date'], str(data['guild_id']))
+            )
+            db.commit()
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
+        finally:
+            cursor.close()
+        return jsonify({'success': True})
+    
+    # Update an event
+    @admin_blueprint.route('/api/events/<event_id>', methods=['PUT'])
+    def update_event(event_id):
+        db = current_app.get_db()
+        data = request.get_json()
+        cursor = db.cursor()
+        try:
+            datetime.strptime(data['date'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid date format'}), 400
+        cursor.execute(
+            "UPDATE events SET host_id=%s, date=%s, guild_id=%s WHERE event_id=%s",
+            (str(data['host_id']), data['date'], str(data['guild_id']), event_id)
+        )
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
+    
+    # Delete an event
+    @admin_blueprint.route('/api/events/<event_id>', methods=['DELETE'])
+    def delete_event(event_id):
+        db = current_app.get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM events WHERE event_id=%s", (event_id,))
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
 
+    # List event attendees
     @admin_blueprint.route('/api/events/<int:event_id>/attendees')
     def api_event_attendees(event_id):
         db = current_app.get_db()
         cursor = db.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''
-            SELECT u.user_id
-            FROM event_attendees ea
-            JOIN users u ON ea.user_id = u.user_id
-            WHERE ea.event_id = %s
+            SELECT user_id
+            FROM event_attendees
+            WHERE event_id = %s
         ''', (event_id,))
         attendees = cursor.fetchall()
+        for attendee in attendees:
+            attendee['user_id'] = str(attendee['user_id'])
         cursor.close()
         return jsonify(attendees)
 
+    # Add an attendee to an event
+    @admin_blueprint.route('/api/events/<int:event_id>/attendees', methods=['POST'])
+    def add_event_attendee(event_id):
+        db = current_app.get_db()
+        data = request.get_json()
+        user_id = str(data['user_id'])
+        cursor = db.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO event_attendees (event_id, user_id) VALUES (%s, %s)",
+                (event_id, user_id)
+            )
+            db.commit()
+        except Exception as e:
+            if "Duplicate entry" in str(e):
+                return jsonify({'success': False, 'error': 'Attendee already added.'}), 400
+            return jsonify({'success': False, 'error': str(e)}), 400
+        finally:
+            cursor.close()
+        return jsonify({'success': True})
+    
+    # Remove an attendee from an event
+    @admin_blueprint.route('/api/events/<int:event_id>/attendees/<user_id>', methods=['DELETE'])
+    def remove_event_attendee(event_id, user_id):
+        db = current_app.get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "DELETE FROM event_attendees WHERE event_id=%s AND user_id=%s",
+            (event_id, user_id)
+        )
+        db.commit()
+        cursor.close()
+        return jsonify({'success': True})
+    
     # Former Users API routes
     @admin_blueprint.route('/api/former_users')
     def api_former_users():
