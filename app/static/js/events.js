@@ -9,7 +9,20 @@ function showEvents(page = 1, perPage = 10) {
   fetch(`/admin/api/events?page=${page}&per_page=${perPage}`)
     .then(response => response.json())
     .then(events => {
-      let html = '<div class="event-cards" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
+      let html = `
+        <div style="margin-bottom:20px;text-align:center;">
+          <button onclick="toggleAddEventForm()">Add Event</button>
+          <div id="add-event-form" style="display:none;margin-top:10px;">
+            <input type="text" id="add-host-id" placeholder="Host ID (as string)">
+            <input type="date" id="add-event-date" placeholder="Date">
+            <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
+            <button onclick="addEvent()">Submit</button>
+            <button onclick="toggleAddEventForm()">Cancel</button>
+          </div>
+        </div>
+      `; // <-- Add form is now at the top
+
+      html += '<div class="event-cards" style="display:flex;flex-direction:column;gap:16px;align-items:center;">';
       events.forEach(event => {
         if (editingEvent && editingEvent.event_id === event.event_id) {
           html += `
@@ -24,14 +37,18 @@ function showEvents(page = 1, perPage = 10) {
           `;
         } else {
           html += `
-            <div class="event-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;">
-              <strong>Event ID:</strong> ${event.event_id}<br>
-              <strong>Host ID:</strong> ${event.host_id}<br>
-              <strong>Date:</strong> ${event.date}<br>
-              <strong>Guild ID:</strong> ${event.guild_id}<br>
-              <button onclick="editEvent('${event.event_id}')">Edit</button>
-              <button onclick="confirmDeleteEvent('${event.event_id}')">Delete</button>
-              <button onclick="openAttendeesModal('${event.event_id}')">Manage Attendees</button>
+            <div class="event-card" style="display:flex;align-items:center;gap:24px;border:1px solid #ccc;padding:16px;border-radius:8px;width:600px;max-width:90vw;">
+              <div style="flex:1;">
+                <strong>Event ID:</strong> ${event.event_id}<br>
+                <strong>Host ID:</strong> ${event.host_id}<br>
+                <strong>Date:</strong> ${event.date ? formatDateDMY(event.date) : ''}<br>
+                <strong>Guild ID:</strong> ${event.guild_id}<br>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <button onclick="editEvent('${event.event_id}')">Edit</button>
+                <button onclick="confirmDeleteEvent('${event.event_id}')">Delete</button>
+                <button onclick="openAttendeesModal('${event.event_id}')">Manage Attendees</button>
+              </div>
             </div>
           `;
         }
@@ -45,19 +62,7 @@ function showEvents(page = 1, perPage = 10) {
           <button onclick="showEvents(${page + 1}, ${perPage})" ${events.length < perPage ? 'disabled' : ''}>Next</button>
         </div>
       `;
-      // Add Event button and form
-      html += `
-        <div style="margin-bottom:20px;text-align:center;">
-          <button onclick="toggleAddEventForm()">Add Event</button>
-          <div id="add-event-form" style="display:none;margin-top:10px;">
-            <input type="text" id="add-host-id" placeholder="Host ID (as string)">
-            <input type="date" id="add-event-date" placeholder="Date">
-            <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
-            <button onclick="addEvent()">Submit</button>
-            <button onclick="toggleAddEventForm()">Cancel</button>
-          </div>
-        </div>
-      `;
+
       document.getElementById('tab-content').innerHTML = html;
     });
 }
@@ -253,4 +258,13 @@ function removeAttendee(userId) {
         alert('Failed to remove attendee: ' + (data.error || 'Unknown error'));
       }
     });
+}
+
+function formatDateDMY(dateStr) {
+  // Handles both "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SSZ" formats
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${month}/${day}/${year}`;
 }

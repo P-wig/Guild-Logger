@@ -20,11 +20,14 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [ ] Build admin dashboard features:
   - [✅] Create a tabbed interface with a sub-tab for each database table (`users`, `events`, `event_attendees`, `former_users`)
   - [✅] For each table, display all rows in a scrollable menu/list UI
-  - [ ] For each row, add an "Edit" button that opens a form or modal for editing that row’s data
-  - [ ] On save, update the row in the database and refresh the UI
-  - [ ] Add "Add New" and "Delete" buttons for CRUD operations as needed
-  - [ ] Ensure all changes are reflected in the database in real time
+  - [✅] For each row, add an "Edit" button that opens a form or modal for editing that row’s data
+  - [✅] On save, update the row in the database and refresh the UI
+  - [✅] Add "Add New" and "Delete" buttons for CRUD operations as needed
+  - [✅] Ensure all changes are reflected in the database in real time
   - [ ] Secure all endpoints with server-side authentication and authorization
+  - [ ] Display Discord usernames and profile pictures for users (using bot cache)
+  - [ ] Add debug logging for API endpoints to aid troubleshooting
+  - [ ] Validate Discord user/guild IDs before making bot cache lookups
 - [✅] Implement Discord OAuth2 login for authentication
 - [✅] Restrict dashboard access to approved Discord users (admin/mods)
 - [ ] Apply consistent styling using CSS components
@@ -34,7 +37,7 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 
 ### Discord Bot Integration
 - [✅] Set up virtual environment and install Flask + Discord.py
-- [ ] Connect bot to Discord server
+- [✅] Connect bot to Discord server
 - [ ] Implement event hosting announcements (live usage)
 - [ ] Sync event participation data from Discord to database
 - [ ] Automate user/event updates in the database
@@ -60,8 +63,10 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Add a Railway-managed database (MySQL)
 - [✅] Import SQL data into Railway database using the MySQL CLI
 - [✅] Set environment variables in Railway dashboard
-- [ ] Deploy Flask app and Discord bot via Railway’s Docker support
-- [ ] Update Discord OAuth2 Redirect URI to Railway’s provided domain
+- [✅] Deploy Flask app and Discord bot via Railway’s Docker support
+- [✅] Update Discord OAuth2 Redirect URI to Railway’s provided domain
+- [ ] Confirm bot is online after deployment (add this as a new checkpoint)
+- [ ] Confirm bot can access member info after deployment (add this as a new checkpoint)
 
 
 ## 📝 Next Steps & Reminders

@@ -7,18 +7,39 @@ function showFormerUsers(page = 1, perPage = 10) {
     .then(response => response.json())
     .then(users => {
       currentFormerUsers = users;
-      let html = '<div class="former-user-cards" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
+
+      // Add Former User button and form at the top (already present)
+      let html = `
+        <div style="margin-bottom:20px;text-align:center;">
+          <button onclick="toggleAddFormerUserForm()">Add Former User</button>
+          <div id="add-former-user-form" style="display:none;margin-top:10px;">
+            <input type="text" id="add-former-user-id" placeholder="User ID (as string)">
+            <input type="text" id="add-former-guild-id" placeholder="Guild ID (as string)">
+            <input type="date" id="add-left-date" placeholder="Left Date">
+            <button onclick="addFormerUser()">Submit</button>
+            <button onclick="toggleAddFormerUserForm()">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      // Single column, horizontal card format
+      html += '<div class="former-user-cards" style="display:flex;flex-direction:column;gap:16px;align-items:center;">';
       users.forEach(user => {
         html += `
-          <div class="former-user-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;">
-            <strong>User ID:</strong> ${user.user_id}<br>
-            <strong>Guild ID:</strong> ${user.guild_id}<br>
-            <strong>Left Date:</strong> ${user.left_date}<br>
-            <button onclick="confirmDeleteFormerUser('${user.user_id}', '${user.guild_id}')">Delete</button>
+          <div class="former-user-card" style="display:flex;align-items:center;gap:24px;border:1px solid #ccc;padding:16px;border-radius:8px;width:600px;max-width:90vw;">
+            <div style="flex:1;">
+              <strong>User ID:</strong> ${user.user_id}<br>
+              <strong>Guild ID:</strong> ${user.guild_id}<br>
+              <strong>Left Date:</strong> ${formatDateDMY(user.left_date)}<br>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button onclick="confirmDeleteFormerUser('${user.user_id}', '${user.guild_id}')">Delete</button>
+            </div>
           </div>
         `;
       });
       html += '</div>';
+
       // Pagination controls
       html += `
         <div style="margin-top:20px;">
@@ -40,20 +61,6 @@ function showFormerUsers(page = 1, perPage = 10) {
           </div>
         `;
       }
-
-      // Add Former User button and form
-      html += `
-        <div style="margin-bottom:20px;text-align:center;">
-          <button onclick="toggleAddFormerUserForm()">Add Former User</button>
-          <div id="add-former-user-form" style="display:none;margin-top:10px;">
-            <input type="text" id="add-former-user-id" placeholder="User ID (as string)">
-            <input type="text" id="add-former-guild-id" placeholder="Guild ID (as string)">
-            <input type="date" id="add-left-date" placeholder="Left Date">
-            <button onclick="addFormerUser()">Submit</button>
-            <button onclick="toggleAddFormerUserForm()">Cancel</button>
-          </div>
-        </div>
-      `;
 
       document.getElementById('tab-content').innerHTML = html;
     });
@@ -127,4 +134,12 @@ function addFormerUser() {
         alert('Failed to add former user: ' + (data.error || 'Unknown error'));
       }
     });
+}
+
+function formatDateDMY(dateStr) {
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${month}/${day}/${year}`;
 }

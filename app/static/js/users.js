@@ -4,43 +4,30 @@ let editingUser = null; // Track the user being edited
 
 // Function to fetch and display users in a table
 function showUsers(page = 1, perPage = 10) {
-  // Make a GET request to the /api/users endpoint with pagination
   fetch(`/admin/api/users?page=${page}&per_page=${perPage}`)
     .then(response => response.json()) // Parse the JSON response
     .then(users => {
       currentUsers = users;
-      // Start building the HTML for the user cards
-      let html = '<div class="user-cards" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">';
-      // Add a card for each user
-      users.forEach(user => {
-        if (editingUser && editingUser.user_id === user.user_id && editingUser.guild_id === user.guild_id) {
-          html += `
-            <div class="user-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;box-shadow:2px 2px 8px #eee;">
-              <strong>User ID:</strong> ${user.user_id}<br>
-              <label>Join Date: <input type="date" id="edit-join-date-${user.user_id}-${user.guild_id}" value="${user.join_date ? user.join_date.substring(0, 10) : ''}"></label><br>
-              <label>Status:
-                <select id="edit-status-${user.user_id}-${user.guild_id}">
-                  <option value="active" ${user.status === 'active' ? 'selected' : ''}>active</option>
-                  <option value="retired" ${user.status === 'retired' ? 'selected' : ''}>retired</option>
-                </select>
-              </label><br>
-              <button onclick="saveUser('${user.user_id}', '${user.guild_id}')">Save</button>
-              <button onclick="cancelEditUser()">Cancel</button>
-            </div>
-          `;
-        } else {
-          html += `
-            <div class="user-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;box-shadow:2px 2px 8px #eee;">
-              <strong>User ID:</strong> ${user.user_id}<br>
-              <strong>Join Date:</strong> ${user.join_date}<br>
-              <strong>Status:</strong> ${user.status}<br>
-              <button onclick="editUser('${user.user_id}', '${user.guild_id}')">Edit</button>
-              <button onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">Delete</button>
-            </div>
-          `;
-        }
-      });
-      html += '</div>';
+
+      // Add User button and form at the top
+      let html = `
+        <div style="margin-bottom:20px;text-align:center;">
+          <button onclick="toggleAddUserForm()">Add User</button>
+          <div id="add-user-form" style="display:none;margin-top:10px;">
+            <input type="text" id="add-user-id" placeholder="User ID (as string)">
+            <input type="date" id="add-join-date" placeholder="Join Date">
+            <select id="add-status">
+              <option value="active">active</option>
+              <option value="retired">retired</option>
+            </select>
+            <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
+            <button onclick="addUser()">Submit</button>
+            <button onclick="toggleAddUserForm()">Cancel</button>
+          </div>
+        </div>
+        <div id="user-cards-container"></div>
+      `;
+
       // Pagination controls
       html += `
         <div style="margin-top:20px;">
@@ -63,27 +50,40 @@ function showUsers(page = 1, perPage = 10) {
         `;
       }
 
-      // Add User button and form
-      html += `
-        <div style="margin-bottom:20px;text-align:center;">
-          <button onclick="toggleAddUserForm()">Add User</button>
-          <div id="add-user-form" style="display:none;margin-top:10px;">
-            <input type="text" id="add-user-id" placeholder="User ID (as string)">
-            <input type="date" id="add-join-date" placeholder="Join Date">
-            <select id="add-status">
-              <option value="active">active</option>
-              <option value="retired">retired</option>
-            </select>
-            <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
-            <button onclick="addUser()">Submit</button>
-            <button onclick="toggleAddUserForm()">Cancel</button>
-          </div>
-        </div>
-      `;
-
-      // Insert the generated HTML into the page
       document.getElementById('tab-content').innerHTML = html;
+
+      // Now render the user cards
+      renderUserCards(users);
     });
+}
+
+async function renderUserCards(users) {
+  let html = '';
+  for (const user of users) {
+    // Fetch Discord info for each user
+    let discordInfo = await fetchDiscordUser(user.guild_id, user.user_id);
+    let username = discordInfo && discordInfo.user ? discordInfo.user.username : 'Unknown';
+    let avatarUrl = discordInfo && discordInfo.user && discordInfo.user.avatar
+      ? `https://cdn.discordapp.com/avatars/${user.user_id}/${discordInfo.user.avatar}.png`
+      : 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+    html += `
+      <div class="user-card" style="display:flex;align-items:center;gap:24px;border:1px solid #ccc;padding:16px;border-radius:8px;width:600px;max-width:90vw;">
+        <img src="${avatarUrl}" alt="Avatar" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
+        <div style="flex:1;">
+          <strong>${username}</strong><br>
+          <strong>User ID:</strong> ${user.user_id}<br>
+          <strong>Join Date:</strong> ${user.join_date ? formatDateDMY(user.join_date) : ''}<br>
+          <strong>Status:</strong> ${user.status}<br>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button onclick="editUser('${user.user_id}', '${user.guild_id}')">Edit</button>
+          <button onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById('user-cards-container').innerHTML = html;
 }
 
 
@@ -201,4 +201,18 @@ function addUser() {
         alert('Failed to add user: ' + (data.error || 'Unknown error'));
       }
     });
+}
+
+function formatDateDMY(dateStr) {
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+async function fetchDiscordUser(guildId, userId) {
+  const res = await fetch(`/api/discord_user/${guildId}/${userId}`);
+  if (!res.ok) return null;
+  return await res.json();
 }

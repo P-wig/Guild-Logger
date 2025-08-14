@@ -4,7 +4,9 @@ import sys
 sys.dont_write_bytecode = True
 from flask import Blueprint, render_template, session, jsonify, current_app, request
 import pymysql
+import requests
 from datetime import datetime
+from bot.bot import bot  # Import your bot instance
 
 def get_blueprint():
     admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
@@ -272,5 +274,23 @@ def get_blueprint():
         db.commit()
         cursor.close()
         return jsonify({'success': True})
+
+    # Get Discord user information
+    @admin_blueprint.route('/api/discord_user/<guild_id>/<user_id>')
+    def get_discord_guild_member(guild_id, user_id):
+        print(f"Endpoint hit with guild_id={guild_id}, user_id={user_id}")  # Always prints
+        guild = bot.get_guild(int(guild_id))
+        print(f"Guild: {guild}")  # Prints None if not found
+        if guild:
+            member = guild.get_member(int(user_id))
+            print(f"Member: {member}")  # Prints None if not found
+            if member:
+                return jsonify({
+                    "user": {
+                        "username": member.name,
+                        "avatar": member.avatar.key if member.avatar else None
+                    }
+                })
+        return jsonify({}), 404
 
     return admin_blueprint

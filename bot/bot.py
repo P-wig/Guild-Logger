@@ -33,5 +33,6 @@ async def load_cogs():
 
 # cogs will be defined and loaded in the cogs directory
 
-if __name__ == "__main__":
+# Bot startup
+def start_bot():
     bot.run(TOKEN)

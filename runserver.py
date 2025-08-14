@@ -17,10 +17,15 @@
 # After the above and setting up the database, you should be able to run and debug this program
 import sys 
 import os
+import threading
+from bot.bot import start_bot
 sys.dont_write_bytecode = True
 from app import create_app
 
 
 app = create_app()
 print(app.url_map)
+# Start bot in a separate thread
+threading.Thread(target=start_bot, daemon=True).start()
+
 app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
