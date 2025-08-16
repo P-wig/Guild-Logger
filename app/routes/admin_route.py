@@ -6,7 +6,9 @@ from flask import Blueprint, render_template, session, jsonify, current_app, req
 import pymysql
 import requests
 from datetime import datetime
-from bot.bot import bot  # Import your bot instance
+from bot.bot import bot, bot_ready  # Import your bot instance
+
+token = os.getenv("DISCORD_TOKEN")
 
 def get_blueprint():
     admin_blueprint = Blueprint('admin', __name__, url_prefix='/admin')
@@ -278,17 +280,24 @@ def get_blueprint():
     # Get Discord user information
     @admin_blueprint.route('/api/discord_user/<guild_id>/<user_id>')
     def get_discord_guild_member(guild_id, user_id):
-        print(f"Endpoint hit with guild_id={guild_id}, user_id={user_id}")  # Always prints
+        bot_ready.wait()  # Block until bot is ready
         guild = bot.get_guild(int(guild_id))
-        print(f"Guild: {guild}")  # Prints None if not found
         if guild:
             member = guild.get_member(int(user_id))
-            print(f"Member: {member}")  # Prints None if not found
+            if not member:
+                # Try REST fetch if not cached (requires intents.members = True)
+                import asyncio
+                try:
+                    member = asyncio.run_coroutine_threadsafe(
+                        guild.fetch_member(int(user_id)), bot.loop
+                    ).result()
+                except Exception:
+                    member = None
             if member:
                 return jsonify({
                     "user": {
                         "username": member.name,
-                        "avatar": member.avatar.key if member.avatar else None
+                        "avatar": str(member.avatar.url) if member.avatar else None
                     }
                 })
         return jsonify({}), 404

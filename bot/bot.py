@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+import threading
 
 load_dotenv()  # Loads .env file at project root
 
@@ -9,12 +10,16 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True  # Needed for message commands
+intents.members = True  # <-- This is required for member info!
 
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+bot_ready = threading.Event()
 
 @bot.event  # Decorator to register an event listener to discord.py
 async def on_ready():  # discord event triggered when the bot is connected to Discord
     print(f"Bot connected as {bot.user}")  # prints the bot's username
+    bot_ready.set()
     try:
         synced = await bot.tree.sync()  # tells Discord about our slash commands
         print(f"Synced {len(synced)} slash commands.") 
