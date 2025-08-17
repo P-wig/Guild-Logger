@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, session, jsonify, current_app, req
 import pymysql
 import requests
 from datetime import datetime
+import asyncio
 from bot.bot import bot, bot_ready  # Import your bot instance
 
 token = os.getenv("DISCORD_TOKEN")
@@ -57,11 +58,11 @@ def get_blueprint():
         cursor.close()
         return jsonify({'success': True})
 
-    @admin_blueprint.route('/api/users/<int:user_id>', methods=['DELETE'])
-    def delete_user(user_id):
+    @admin_blueprint.route('/api/users/<user_id>/<guild_id>', methods=['DELETE'])
+    def delete_user(user_id, guild_id):
         db = current_app.get_db()
         cursor = db.cursor()
-        cursor.execute("DELETE FROM users WHERE user_id=%s", (user_id,))
+        cursor.execute("DELETE FROM users WHERE user_id=%s AND guild_id=%s", (user_id, guild_id))
         db.commit()
         cursor.close()
         return jsonify({'success': True})
@@ -285,19 +286,20 @@ def get_blueprint():
         if guild:
             member = guild.get_member(int(user_id))
             if not member:
-                # Try REST fetch if not cached (requires intents.members = True)
-                import asyncio
+                # Try REST fetch if not cached
                 try:
                     member = asyncio.run_coroutine_threadsafe(
                         guild.fetch_member(int(user_id)), bot.loop
                     ).result()
-                except Exception:
+                except Exception as e:
+                    print(f"Error during REST fetch: {e}")
                     member = None
             if member:
+                avatar_url = str(member.avatar.url) if member.avatar else None
                 return jsonify({
                     "user": {
                         "username": member.name,
-                        "avatar": str(member.avatar.url) if member.avatar else None
+                        "avatar": avatar_url
                     }
                 })
         return jsonify({}), 404

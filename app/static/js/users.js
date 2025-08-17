@@ -60,25 +60,56 @@ function showUsers(page = 1, perPage = 10) {
 async function renderUserCards(users) {
   let html = '';
   for (const user of users) {
-    // Fetch Discord info for each user
     let discordInfo = await fetchDiscordUser(user.guild_id, user.user_id);
     let username = discordInfo && discordInfo.user ? discordInfo.user.username : 'Unknown';
     let avatarUrl = discordInfo && discordInfo.user && discordInfo.user.avatar
-      ? `https://cdn.discordapp.com/avatars/${user.user_id}/${discordInfo.user.avatar}.png`
+      ? discordInfo.user.avatar
       : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
+    const isEditing = editingUser &&
+      editingUser.user_id === user.user_id &&
+      editingUser.guild_id === user.guild_id;
+
     html += `
-      <div class="user-card" style="display:flex;align-items:center;gap:24px;border:1px solid #ccc;padding:16px;border-radius:8px;width:600px;max-width:90vw;">
-        <img src="${avatarUrl}" alt="Avatar" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
-        <div style="flex:1;">
-          <strong>${username}</strong><br>
-          <strong>User ID:</strong> ${user.user_id}<br>
-          <strong>Join Date:</strong> ${user.join_date ? formatDateDMY(user.join_date) : ''}<br>
-          <strong>Status:</strong> ${user.status}<br>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button onclick="editUser('${user.user_id}', '${user.guild_id}')">Edit</button>
-          <button onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">Delete</button>
+      <div class="user-card">
+        <div class="user-card-row">
+          <img src="${avatarUrl}" alt="Avatar" class="user-avatar">
+          <div class="user-info">
+            <div class="user-name">${username}</div>
+            <div class="user-details">
+              <span><strong>ID:</strong> ${user.user_id}</span>
+              <span><strong>Date:</strong> ${
+                isEditing
+                  ? `<input type="date" id="edit-join-date-${user.user_id}-${user.guild_id}" value="${user.join_date}">`
+                  : (user.join_date ? formatDateDMY(user.join_date) : '')
+              }</span>
+              <span><strong>Status:</strong> ${
+                isEditing
+                  ? `<select id="edit-status-${user.user_id}-${user.guild_id}">
+                      <option value="active" ${user.status === 'active' ? 'selected' : ''}>active</option>
+                      <option value="retired" ${user.status === 'retired' ? 'selected' : ''}>retired</option>
+                    </select>`
+                  : user.status
+              }</span>
+            </div>
+          </div>
+          <div class="user-actions">
+            ${
+              isEditing
+                ? `<button onclick="saveUser('${user.user_id}', '${user.guild_id}')" class="save-btn" title="Save">
+                     <span class="icon-check"></span>
+                   </button>
+                   <button onclick="cancelEditUser()" class="cancel-btn" title="Cancel">
+                     <span class="icon-cancel"></span>
+                   </button>`
+                : `<button class="edit-btn" title="Edit" onclick="editUser('${user.user_id}', '${user.guild_id}')">
+                     <span class="icon-gear"></span>
+                   </button>
+                   <button class="delete-btn" title="Delete" onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">
+                     <span class="icon-x"></span>
+                   </button>`
+            }
+          </div>
         </div>
       </div>
     `;
@@ -212,7 +243,7 @@ function formatDateDMY(dateStr) {
 }
 
 async function fetchDiscordUser(guildId, userId) {
-  const res = await fetch(`/api/discord_user/${guildId}/${userId}`);
+  const res = await fetch(`/admin/api/discord_user/${guildId}/${userId}`);
   if (!res.ok) return null;
   return await res.json();
 }

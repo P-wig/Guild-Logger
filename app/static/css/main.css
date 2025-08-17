@@ -1,3 +1,4 @@
+/* GLOBAL STYLES */
 body {
   margin: 0;
   padding: 0;
@@ -6,8 +7,7 @@ body {
   color: #444;
 }
 
-/* Create dark grey header with a white logo */
-
+/* HEADER & NAVIGATION */
 header {
   background-color: #2B2B2B;
   height: 60px;
@@ -29,45 +29,6 @@ header h1.logo:hover {
   text-decoration: none;
 }
 
-/* Center the body content */
-
-.container {
-  width: 1100px;
-  margin: 0 auto;
-}
-
-.container-flex {
-  width: 1200px;
-  margin: 0 auto;
-  display: flex;
-}
-
-div.jumbo {
-  padding: 10px 0 30px 0;
-  background-color: #eeeeee;
-  -webkit-border-radius: 6px;
-     -moz-border-radius: 6px;
-          border-radius: 6px;
-}
-
-h2 {
-  font-size: 2em;
-  margin-top: 40px;
-  text-align: center;
-  letter-spacing: -2px;
-}
-
-h3 {
-  font-size: 1.7em;
-  font-weight: 100;
-  margin-top: 30px;
-  text-align: center;
-  letter-spacing: -1px;
-  color: #999;
-}
-
-/* Display navigation links inline */
-
 .menu {
   float: right;
   margin-top: 8px;
@@ -86,76 +47,274 @@ h3 {
   text-decoration: none;
 }
 
-/* Contact form */
-form label {
-  font-size: 1.2em;
-  font-weight: bold;
-  display: block;
-  padding: 10px 0;
+/* CONTAINERS & LAYOUT */
+.container {
+  width: 1100px;
+  margin: 0 auto;
 }
 
-
-form input#name,
-form input#email,
-form input#subject {
-  width: 400px;
-  background-color: #fafafa;
-  -webkit-border-radius: 3px;  
-     -moz-border-radius: 3px;  
-          border-radius: 3px;
-  border: 1px solid #cccccc;
-  padding: 5px;
-  font-size: 1.1em;
+.container-flex {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
 }
 
-form textarea#message,
-form textarea#prompt {
-  width: 500px;
-  height: 100px;
-  background-color: #fafafa;
-  -webkit-border-radius: 3px;  
-     -moz-border-radius: 3px;  
-          border-radius: 3px;
-  border: 1px solid #cccccc;
-  margin-bottom: 10px;
-  padding: 5px;
-  font-size: 1.1em;
+div.jumbo {
+  padding: 10px 0 30px 0;
+  background-color: #eeeeee;
+  border-radius: 6px;
 }
 
-form input#submit {
-  display: block;
-  -webkit-border-radius: 3px; 
-     -moz-border-radius: 3px;
-          border-radius: 3px;
-  border:1px solid #d8d8d8;
-  padding: 10px; 
-  font-weight:bold; 
-  text-align: center; 
-  color: #000000; 
-  background-color: #f4f4f4;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f4f4f4), color-stop(100%, #e5e5e5));
-  background-image: -webkit-linear-gradient(top, #f4f4f4, #e5e5e5);
-  background-image: -moz-linear-gradient(top, #f4f4f4, #e5e5e5);
-  background-image: -ms-linear-gradient(top, #f4f4f4, #e5e5e5);
-  background-image: -o-linear-gradient(top, #f4f4f4, #e5e5e5);
-  background-image: linear-gradient(top, #f4f4f4, #e5e5e5);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f4f4, endColorstr=#e5e5e5);
+h2 {
+  font-size: 2em;
+  margin-top: 40px;
+  text-align: center;
+  letter-spacing: -2px;
 }
 
-form input#submit:hover{
-  cursor: pointer;
-  border:1px solid #c1c1c1; 
-  background-color: #dbdbdb;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dbdbdb), color-stop(100%, #cccccc));
-  background-image: -webkit-linear-gradient(top, #dbdbdb, #cccccc);
-  background-image: -moz-linear-gradient(top, #dbdbdb, #cccccc);
-  background-image: -ms-linear-gradient(top, #dbdbdb, #cccccc);
-  background-image: -o-linear-gradient(top, #dbdbdb, #cccccc);
-  background-image: linear-gradient(top, #dbdbdb, #cccccc);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#dbdbdb, endColorstr=#cccccc);
+h3 {
+  font-size: 1.7em;
+  font-weight: 100;
+  margin-top: 30px;
+  text-align: center;
+  letter-spacing: -1px;
+  color: #999;
 }
 
-/* Message flashing */
+/* FLASH MESSAGES */
 .flash {
   background-color: #FBB0B0;
   padding: 10px;
   width: 400px;
+}
+
+/* USER CARDS */
+#user-cards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 32px;
+}
+
+/* Card container */
+.user-card {
+  background: #23272a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 2px;
+  box-shadow: 0 2px 8px #0003;
+  max-width: 950px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card row layout */
+.user-card-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Avatar */
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #7289da;
+  background: #2c2f33;
+  flex-shrink: 0;
+}
+
+/* Info section */
+.user-info {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.user-name {
+  text-align: left;
+  font-size: 1.2em;
+  font-weight: bold;
+  word-break: break-word;
+}
+
+.user-details {
+  display: flex;
+  gap: 10px;
+  font-size: 0.95em;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* Ensure all fields in user-details align to middle */
+.user-details > span,
+.user-details input[type="date"],
+.user-details select {
+  vertical-align: middle;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Remove extra margin from input/select inside user-details */
+.user-details input[type="date"],
+.user-details select {
+  margin-right: 4px;
+}
+
+/* Make field labels smaller and italic */
+.user-details span > strong {
+  font-size: 0.85em;
+  font-style: italic;
+  font-weight: normal;
+  color: #bbb;
+  margin-right: 1px;
+}
+
+/* Actions section */
+.user-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Unified button styles for edit, delete, save, cancel */
+.edit-btn, .delete-btn, .save-btn, .cancel-btn {
+  background: #36393f;
+  border: 2px solid #23272a;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.2s, border 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 44px; /* Ensures consistent button width */
+  min-height: 44px; /* Ensures consistent button height */
+}
+
+/* Individual button hover colors */
+.edit-btn:hover {
+  background: #7289da;
+  border-color: #7289da;
+}
+.delete-btn {
+  border-color: #ff5555;
+}
+.delete-btn:hover {
+  background: #ff5555;
+  border-color: #ff5555;
+}
+.save-btn:hover {
+  background: #43b581;
+  border-color: #43b581;
+}
+.cancel-btn {
+  border-color: #ff5555;
+}
+.cancel-btn:hover {
+  background: #ff5555;
+  border-color: #ff5555;
+}
+
+/* Unified icon styles for all action buttons */
+.icon-gear::before,
+.icon-x::before,
+.icon-check::before,
+.icon-cancel::before {
+  font-size: 1.7em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Individual icon colors */
+.icon-gear::before {
+  content: "\2699";
+  color: #7289da;
+  transition: color 0.2s;
+}
+.edit-btn:hover .icon-gear::before {
+  color: #fff;
+}
+
+.icon-x::before {
+  content: "\2716";
+  color: #ff5555;
+  transition: color 0.2s;
+}
+.delete-btn:hover .icon-x::before {
+  color: #fff;
+}
+
+.icon-check::before {
+  content: "\2714";
+  color: #43b581;
+  transition: color 0.2s;
+}
+.save-btn:hover .icon-check::before {
+  color: #fff;
+}
+
+.icon-cancel::before {
+  content: "\2212";
+  color: #ff5555;
+  transition: color 0.2s;
+}
+.cancel-btn:hover .icon-cancel::before {
+  color: #fff;
+}
+
+/* Edit form fields inside cards */
+.user-card input[type="date"],
+.user-card select {
+  background: #2c2f33;
+  color: #fff;
+  border: 1.5px solid #7289da;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 1em;
+  margin-right: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.user-card input[type="date"]:focus,
+.user-card select:focus {
+  border-color: #99aab5;
+}
+
+.user-card input[type="date"] {
+  width: 110px;
+  min-width: 0;
+  font-size: 0.95em;
+  padding: 4px 8px;
+  background: #2c2f33;
+  color: #fff;
+  border: 1.5px solid #7289da;
+  border-radius: 6px;
+  margin-right: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  outline: none;
+  transition: border 0.2s;
 }
