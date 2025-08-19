@@ -318,3 +318,61 @@ h3 {
   outline: none;
   transition: border 0.2s;
 }
+
+/* Modal background and card styling */
+.custom-modal {
+  background: #23272a;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0008;
+  padding: 24px 32px;
+  max-width: 400px;
+  margin: 40px auto;
+  border: 2px solid #36393f;
+  font-size: 1.1em;
+  z-index: 1000;
+}
+
+/* Modal overlay */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(44,47,51,0.85);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal buttons */
+.custom-modal button {
+  background: #36393f;
+  color: #fff;
+  border: 2px solid #23272a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border 0.2s;
+  margin: 0 4px 0 0;
+}
+
+.custom-modal button:hover {
+  background: #7289da;
+  border-color: #7289da;
+  color: #fff;
+}
+
+.custom-modal-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}

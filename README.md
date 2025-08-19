@@ -17,27 +17,32 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Home page renders with React integration and navigation tabs
 - [✅] Home route implemented
 - [✅] Admin route (formerly Guild) implemented
-- [ ] Build admin dashboard features:
-  - [✅] Create a tabbed interface with a sub-tab for each database table (`users`, `events`, `event_attendees`, `former_users`)
-  - [✅] For each table, display all rows in a scrollable menu/list UI
-  - [✅] For each row, add an "Edit" button that opens a form or modal for editing that row’s data
-  - [✅] On save, update the row in the database and refresh the UI
-  - [✅] Add "Add New" and "Delete" buttons for CRUD operations as needed
-  - [✅] Ensure all changes are reflected in the database in real time
-  - [ ] Secure all endpoints with server-side authentication and authorization
-  - [ ] Display Discord usernames and profile pictures for users (using bot cache)
-  - [ ] Add debug logging for API endpoints to aid troubleshooting
-  - [ ] Validate Discord user/guild IDs before making bot cache lookups
+- [✅] Tabbed interface for each database table (`users`, `events`, `event_attendees`, `former_users`)
+- [✅] For each table, display all rows in a scrollable menu/list UI
+- [✅] For each row, add an "Edit" button that opens a form or modal for editing that row’s data
+- [✅] On save, update the row in the database and refresh the UI
+- [✅] Add "Add New" and "Delete" buttons for CRUD operations as needed
+- [✅] Ensure all changes are reflected in the database in real time
+- [✅] Discord usernames and profile pictures for users (using bot cache)
+- [✅] Debug logging for API endpoints to aid troubleshooting
+- [✅] Validate Discord user/guild IDs before making bot cache lookups
 - [✅] Implement Discord OAuth2 login for authentication
 - [✅] Restrict dashboard access to approved Discord users (admin/mods)
-- [ ] Apply consistent styling using CSS components
+- [✅] Apply consistent styling using CSS components
 - [✅] Add logout functionality
 - [✅] Protect all admin routes with login/authorization checks
-- [ ] Add user feedback for login/logout/errors
+- [✅] Add user feedback for login/logout/errors
+- [✅] **Search bar feature** at the top of user cards, with Add User button to the right; supports searching by user ID
+- [✅] **CSS dark theme with neon green highlights** applied to webapp and modals for consistent styling
+- [✅] Modals and forms match card theme and are centered on screen
+- [✅] Responsive and visually consistent user card and modal layouts
+- [ ] Secure all endpoints with server-side authentication and authorization
+- [ ] Apply further CSS polish and accessibility improvements
 
 ### Discord Bot Integration
 - [✅] Set up virtual environment and install Flask + Discord.py
 - [✅] Connect bot to Discord server
+- [✅] Bot caches guild and member info for webapp use
 - [ ] Implement event hosting announcements (live usage)
 - [ ] Sync event participation data from Discord to database
 - [ ] Automate user/event updates in the database
@@ -65,9 +70,59 @@ A Flask web app and Discord bot for monitoring, editing, and tracking Discord se
 - [✅] Set environment variables in Railway dashboard
 - [✅] Deploy Flask app and Discord bot via Railway’s Docker support
 - [✅] Update Discord OAuth2 Redirect URI to Railway’s provided domain
-- [ ] Confirm bot is online after deployment (add this as a new checkpoint)
-- [ ] Confirm bot can access member info after deployment (add this as a new checkpoint)
+- [✅] Confirm bot is online after deployment
+- [✅] Confirm bot can access member info after deployment
 
+---
+
+## 🗂️ Checklist for Replicating Features Across All Tabs
+
+When expanding features from the **Users** tab to other tabs (Events, Event_Attendees, Former_Users), use this checklist:
+
+### General UI & Functionality
+- [ ] Add a search bar at the top of each tab (search by relevant field)
+- [ ] Place the "Add New" button to the right of the search bar in each tab
+- [ ] Ensure modals (edit, delete, add) use the same dark theme and neon green highlight as user cards
+- [ ] Center modals on the screen and align modal buttons horizontally and vertically
+- [ ] Make sure all action buttons (edit, delete, save, cancel) have consistent size, color, and icon usage across all tabs
+- [ ] Apply responsive layout and consistent spacing for cards/lists in each tab
+
+### CRUD Operations
+- [ ] Implement "Edit" functionality for each row in every tab (open modal/form, allow editing, save changes)
+- [ ] Implement "Delete" functionality for each row in every tab (confirmation modal, delete from DB, refresh UI)
+- [ ] Implement "Add New" functionality for each tab (open modal/form, validate input, add to DB, refresh UI)
+- [ ] Ensure all changes are reflected in the database in real time
+
+### Search & Filtering
+- [ ] Enable searching/filtering by relevant field in each tab
+- [ ] Backend routes support search queries for each table
+- [ ] Frontend search input triggers backend search and updates displayed results
+
+### Data Display
+- [ ] Display all rows in a scrollable menu/list UI for each tab
+- [ ] Show relevant info for each row (e.g., event name/date for Events, user info for Attendees)
+- [ ] Display Discord usernames and profile pictures where applicable (using bot cache)
+
+### Styling & Theming
+- [ ] Apply CSS dark theme with neon green highlights to all tabs, cards, modals, and buttons
+- [ ] Ensure consistent font sizes, spacing, and alignment across all tabs
+- [ ] Use the same modal and card layout for all tabs
+
+### Security & Validation
+- [ ] Validate all input fields before submitting changes (edit/add forms)
+- [ ] Restrict CRUD operations to authorized users only
+- [ ] Protect all routes with server-side authentication and authorization checks
+
+### Debugging & Logging
+- [ ] Add debug logging for API endpoints in each tab to aid troubleshooting
+- [ ] Validate IDs and other key fields before making bot cache lookups or DB queries
+
+### Accessibility & UX
+- [ ] Ensure all interactive elements are keyboard accessible
+- [ ] Provide user feedback for successful/failed operations (edit, add, delete)
+- [ ] Ensure modals can be closed via keyboard (Esc) and clicking outside
+
+---
 
 ## 📝 Next Steps & Reminders
 - Complete CRUD functionality for users and events in the admin dashboard

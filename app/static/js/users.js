@@ -11,7 +11,9 @@ function showUsers(page = 1, perPage = 10) {
 
       // Add User button and form at the top
       let html = `
-        <div style="margin-bottom:20px;text-align:center;">
+        <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:12px;">
+          <input type="text" id="search-user-id" placeholder="Search User ID" style="padding:6px 10px;font-size:1em;">
+          <button onclick="searchUsers()">Search</button>
           <button onclick="toggleAddUserForm()">Add User</button>
           <div id="add-user-form" style="display:none;margin-top:10px;">
             <input type="text" id="add-user-id" placeholder="User ID (as string)">
@@ -40,11 +42,13 @@ function showUsers(page = 1, perPage = 10) {
       // Modal
       if (userToDelete) {
         html += `
-          <div class="modal-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:1000;">
-            <div class="modal" style="background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 8px #0002;">
+          <div class="custom-modal-overlay">
+            <div class="custom-modal">
               <p>Are you sure you want to delete this user?</p>
-              <button onclick="deleteUserConfirmed()">Yes, Delete</button>
-              <button onclick="cancelDeleteUser()">Cancel</button>
+              <div class="custom-modal-actions">
+                <button onclick="deleteUserConfirmed()"><span class="icon-x"></span> Yes, Delete</button>
+                <button onclick="cancelDeleteUser()" class="cancel-btn"><span class="icon-cancel"></span> Cancel</button>
+              </div>
             </div>
           </div>
         `;
@@ -246,4 +250,14 @@ async function fetchDiscordUser(guildId, userId) {
   const res = await fetch(`/admin/api/discord_user/${guildId}/${userId}`);
   if (!res.ok) return null;
   return await res.json();
+}
+
+function searchUsers() {
+  const userId = document.getElementById('search-user-id').value.trim();
+  fetch(`/admin/api/users?search=${encodeURIComponent(userId)}`)
+    .then(response => response.json())
+    .then(users => {
+      currentUsers = users;
+      renderUserCards(users);
+    });
 }

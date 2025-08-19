@@ -32,7 +32,14 @@ def get_blueprint():
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 10))
         offset = (page - 1) * per_page
-        cursor.execute('SELECT * FROM users LIMIT %s OFFSET %s', (per_page, offset)) # needs to update when implementing multi server support
+        search = request.args.get('search', '').strip()
+        if search:
+            cursor.execute(
+                'SELECT * FROM users WHERE user_id LIKE %s LIMIT %s OFFSET %s',
+                (f'%{search}%', per_page, offset)
+            )
+        else:
+            cursor.execute('SELECT * FROM users LIMIT %s OFFSET %s', (per_page, offset))
         users = cursor.fetchall()
         for user in users:
             user['user_id'] = str(user['user_id'])
