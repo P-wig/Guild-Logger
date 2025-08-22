@@ -1,6 +1,7 @@
 let currentUsers = [];
 let userToDelete = null;
 let editingUser = null; // Track the user being edited
+let currentPage = 1;
 
 // Function to fetch and display users in a table
 function showUsers(page = 1, perPage = 10) {
@@ -33,9 +34,9 @@ function showUsers(page = 1, perPage = 10) {
       // Pagination controls
       html += `
         <div style="margin-top:20px;">
-          <button onclick="showUsers(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
+          <button onclick="setPage(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
           <span style="margin:0 10px;">Page ${page}</span>
-          <button onclick="showUsers(${page + 1}, ${perPage})" ${users.length < perPage ? 'disabled' : ''}>Next</button>
+          <button onclick="setPage(${page + 1}, ${perPage})" ${users.length < perPage ? 'disabled' : ''}>Next</button>
         </div>
       `;
 
@@ -123,15 +124,13 @@ async function renderUserCards(users) {
 
 
 function editUser(userId, guildId) {
-  console.log("editUser called for", userId);
   editingUser = { user_id: userId, guild_id: guildId };
-  showUsers();
+  showUsers(currentPage);
 }
 
 function cancelEditUser() {
-  console.log("cancelEditUser called");
   editingUser = null;
-  showUsers();
+  showUsers(currentPage);
 }
 
 function saveUser(userId, guildId) {
@@ -154,20 +153,19 @@ function saveUser(userId, guildId) {
   })
     .then(res => res.json())
     .then(() => {
-      console.log("saveUser completed for", userId);
       editingUser = null;
-      showUsers();
+      showUsers(currentPage);
     });
 }
 
 function confirmDeleteUser(userId, guildId) {
   userToDelete = { user_id: userId, guild_id: guildId };
-  showUsers();
+  showUsers(currentPage);
 }
 
 function cancelDeleteUser() {
   userToDelete = null;
-  showUsers();
+  showUsers(currentPage);
 }
 
 function deleteUserConfirmed() {
@@ -175,7 +173,7 @@ function deleteUserConfirmed() {
     .then(res => res.json())
     .then(() => {
       userToDelete = null;
-      showUsers();
+      showUsers(currentPage);
     });
 }
 
@@ -239,11 +237,16 @@ function addUser() {
 }
 
 function formatDateDMY(dateStr) {
-  const d = new Date(dateStr);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${month}/${day}/${year}`;
+  // Handles "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SSZ" formats
+  if (!dateStr) return '';
+  // If dateStr includes time, split at 'T'
+  let datePart = dateStr.split('T')[0];
+  // Split into [year, month, day]
+  const parts = datePart.split('-');
+  if (parts.length === 3) {
+    return `${parts[1]}/${parts[2]}/${parts[0]}`; // MM/DD/YYYY
+  }
+  return dateStr; // fallback
 }
 
 async function fetchDiscordUser(guildId, userId) {
@@ -260,4 +263,9 @@ function searchUsers() {
       currentUsers = users;
       renderUserCards(users);
     });
+}
+
+function setPage(page, perPage) {
+  currentPage = page;
+  showUsers(currentPage, perPage);
 }

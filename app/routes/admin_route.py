@@ -44,6 +44,7 @@ def get_blueprint():
         for user in users:
             user['user_id'] = str(user['user_id'])
             user['guild_id'] = str(user['guild_id'])
+            user['join_date'] = user['join_date'].strftime('%Y-%m-%d')
         return jsonify(users)
 
     @admin_blueprint.route('/api/users/<user_id>/<guild_id>', methods=['PUT'])
