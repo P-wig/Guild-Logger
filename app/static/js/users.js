@@ -86,7 +86,7 @@ async function renderUserCards(users) {
               <span><strong>Date:</strong> ${
                 isEditing
                   ? `<input type="date" id="edit-join-date-${user.user_id}-${user.guild_id}" value="${user.join_date}">`
-                  : (user.join_date ? formatDateDMY(user.join_date) : '')
+                  : formatUserDateDMY(user.join_date)
               }</span>
               <span><strong>Status:</strong> ${
                 isEditing
@@ -236,15 +236,15 @@ function addUser() {
     });
 }
 
-function formatDateDMY(dateStr) {
-  // Handles "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SSZ" formats
+function formatUserDateDMY(dateStr) {
+  console.log('Raw date:', dateStr);
   if (!dateStr) return '';
-  // If dateStr includes time, split at 'T'
-  let datePart = dateStr.split('T')[0];
-  // Split into [year, month, day]
-  const parts = datePart.split('-');
-  if (parts.length === 3) {
-    return `${parts[1]}/${parts[2]}/${parts[0]}`; // MM/DD/YYYY
+  // Extract YYYY-MM-DD from any string
+  const match = dateStr.match(/\d{4}-\d{2}-\d{2}/);
+  if (match) {
+    const [year, month, day] = match[0].split('-');
+    console.log('Formatted date:', `${month}/${day}/${year}`);
+    return `${month}/${day}/${year}`;
   }
   return dateStr; // fallback
 }

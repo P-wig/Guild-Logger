@@ -260,11 +260,15 @@ function removeAttendee(userId) {
     });
 }
 
-function formatDateDMY(dateStr) {
-  // Handles both "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SSZ" formats
-  const d = new Date(dateStr);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${month}/${day}/${year}`;
+function formatEventDateDMY(dateStr) {
+  console.log('Raw date:', dateStr);
+  if (!dateStr) return '';
+  // Extract YYYY-MM-DD from any string
+  const match = dateStr.match(/\d{4}-\d{2}-\d{2}/);
+  if (match) {
+    const [year, month, day] = match[0].split('-');
+    console.log('Formatted date:', `${month}/${day}/${year}`);
+    return `${month}/${day}/${year}`;
+  }
+  return dateStr; // fallback
 }
