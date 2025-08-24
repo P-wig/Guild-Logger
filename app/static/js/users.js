@@ -3,12 +3,91 @@ let userToDelete = null;
 let editingUser = null; // Track the user being edited
 let currentPage = 1;
 
+
+async function getUserCardData(userId, guildId) {
+  const user = currentUsers.find(u => u.user_id === userId && u.guild_id === guildId);
+  const discordInfo = await fetchDiscordUser(user.guild_id, user.user_id);
+  const username = discordInfo && discordInfo.user ? discordInfo.user.username : 'Unknown';
+  const avatarUrl = discordInfo && discordInfo.user && discordInfo.user.avatar
+    ? discordInfo.user.avatar
+    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+  return { user, username, avatarUrl };
+}
+
+function renderSingleUserCard(user, isEditing, username, avatarUrl) {
+  let html = `
+    <div class="user-card" data-user-id="${user.user_id}" data-guild-id="${user.guild_id}">
+      <div class="user-card-row">
+        <img src="${avatarUrl}" alt="Avatar" class="user-avatar">
+        <div class="user-info">
+          <div class="user-name">${username}</div>
+          <div class="user-details">
+            <span><strong>ID:</strong> ${user.user_id}</span>
+            <span><strong>Date:</strong> ${
+              isEditing
+                ? `<input type="date" id="edit-join-date-${user.user_id}-${user.guild_id}" value="${user.join_date}">`
+                : formatUserDateDMY(user.join_date)
+            }</span>
+            <span><strong>Status:</strong> ${
+              isEditing
+                ? `<select id="edit-status-${user.user_id}-${user.guild_id}">
+                    <option value="active" ${user.status === 'active' ? 'selected' : ''}>active</option>
+                    <option value="retired" ${user.status === 'retired' ? 'selected' : ''}>retired</option>
+                  </select>`
+                : user.status
+            }</span>
+          </div>
+        </div>
+        <div class="user-actions">
+          ${
+            isEditing
+              ? `<button onclick="saveUser('${user.user_id}', '${user.guild_id}')" class="save-btn" title="Save">
+                   <span class="icon-check"></span>
+                 </button>
+                 <button onclick="cancelEditUser()" class="cancel-btn" title="Cancel">
+                   <span class="icon-cancel"></span>
+                 </button>`
+              : `<button class="edit-btn" title="Edit" onclick="editUser('${user.user_id}', '${user.guild_id}')">
+                   <span class="icon-gear"></span>
+                 </button>
+                 <button class="delete-btn" title="Delete" onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">
+                   <span class="icon-x"></span>
+                 </button>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+  return html;
+}
+
+async function renderUserCards(users) {
+  let html = '';
+  for (const user of users) {
+    const isEditing = editingUser &&
+      editingUser.user_id === user.user_id &&
+      editingUser.guild_id === user.guild_id;
+
+    // Use the DRY helper for all card data
+    const { user: cardUser, username, avatarUrl } = await getUserCardData(user.user_id, user.guild_id);
+
+    html += renderSingleUserCard(cardUser, isEditing, username, avatarUrl);
+  }
+  document.getElementById('user-cards-container').innerHTML = html;
+}
+
 // Function to fetch and display users in a table
 function showUsers(page = 1, perPage = 10) {
   fetch(`/admin/api/users?page=${page}&per_page=${perPage}`)
-    .then(response => response.json()) // Parse the JSON response
+    .then(response => response.json())
     .then(users => {
       currentUsers = users;
+
+      // If no users and not on the first page, go back one page
+      if (users.length === 0 && page > 1) {
+        setPage(page - 1, perPage);
+        return;
+      }
 
       // Add User button and form at the top
       let html = `
@@ -36,7 +115,7 @@ function showUsers(page = 1, perPage = 10) {
         <div style="margin-top:20px;">
           <button onclick="setPage(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
           <span style="margin:0 10px;">Page ${page}</span>
-          <button onclick="setPage(${page + 1}, ${perPage})" ${users.length < perPage ? 'disabled' : ''}>Next</button>
+          <button onclick="setPage(${page + 1}, ${perPage})" ${(users.length < perPage) ? 'disabled' : ''}>Next</button>
         </div>
       `;
 
@@ -62,78 +141,32 @@ function showUsers(page = 1, perPage = 10) {
     });
 }
 
-async function renderUserCards(users) {
-  let html = '';
-  for (const user of users) {
-    let discordInfo = await fetchDiscordUser(user.guild_id, user.user_id);
-    let username = discordInfo && discordInfo.user ? discordInfo.user.username : 'Unknown';
-    let avatarUrl = discordInfo && discordInfo.user && discordInfo.user.avatar
-      ? discordInfo.user.avatar
-      : 'https://cdn.discordapp.com/embed/avatars/0.png';
-
-    const isEditing = editingUser &&
-      editingUser.user_id === user.user_id &&
-      editingUser.guild_id === user.guild_id;
-
-    html += `
-      <div class="user-card">
-        <div class="user-card-row">
-          <img src="${avatarUrl}" alt="Avatar" class="user-avatar">
-          <div class="user-info">
-            <div class="user-name">${username}</div>
-            <div class="user-details">
-              <span><strong>ID:</strong> ${user.user_id}</span>
-              <span><strong>Date:</strong> ${
-                isEditing
-                  ? `<input type="date" id="edit-join-date-${user.user_id}-${user.guild_id}" value="${user.join_date}">`
-                  : formatUserDateDMY(user.join_date)
-              }</span>
-              <span><strong>Status:</strong> ${
-                isEditing
-                  ? `<select id="edit-status-${user.user_id}-${user.guild_id}">
-                      <option value="active" ${user.status === 'active' ? 'selected' : ''}>active</option>
-                      <option value="retired" ${user.status === 'retired' ? 'selected' : ''}>retired</option>
-                    </select>`
-                  : user.status
-              }</span>
-            </div>
-          </div>
-          <div class="user-actions">
-            ${
-              isEditing
-                ? `<button onclick="saveUser('${user.user_id}', '${user.guild_id}')" class="save-btn" title="Save">
-                     <span class="icon-check"></span>
-                   </button>
-                   <button onclick="cancelEditUser()" class="cancel-btn" title="Cancel">
-                     <span class="icon-cancel"></span>
-                   </button>`
-                : `<button class="edit-btn" title="Edit" onclick="editUser('${user.user_id}', '${user.guild_id}')">
-                     <span class="icon-gear"></span>
-                   </button>
-                   <button class="delete-btn" title="Delete" onclick="confirmDeleteUser('${user.user_id}', '${user.guild_id}')">
-                     <span class="icon-x"></span>
-                   </button>`
-            }
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  document.getElementById('user-cards-container').innerHTML = html;
-}
-
-
-function editUser(userId, guildId) {
+async function editUser(userId, guildId) {
   editingUser = { user_id: userId, guild_id: guildId };
-  showUsers(currentPage);
+  const card = document.querySelector(
+    `.user-card[data-user-id="${userId}"][data-guild-id="${guildId}"]`
+  );
+  if (card) {
+    const { user, username, avatarUrl } = await getUserCardData(userId, guildId);
+    card.outerHTML = renderSingleUserCard(user, true, username, avatarUrl);
+  }
 }
 
-function cancelEditUser() {
-  editingUser = null;
-  showUsers(currentPage);
+async function cancelEditUser() {
+  if (editingUser) {
+    const { user_id, guild_id } = editingUser;
+    editingUser = null;
+    const card = document.querySelector(
+      `.user-card[data-user-id="${user_id}"][data-guild-id="${guild_id}"]`
+    );
+    if (card) {
+      const { user, username, avatarUrl } = await getUserCardData(user_id, guild_id);
+      card.outerHTML = renderSingleUserCard(user, false, username, avatarUrl);
+    }
+  }
 }
 
-function saveUser(userId, guildId) {
+async function saveUser(userId, guildId) {
   const user = currentUsers.find(u => u.user_id == userId && u.guild_id == guildId);
   const joinDate = document.getElementById(`edit-join-date-${userId}-${guildId}`).value;
   const status = document.getElementById(`edit-status-${userId}-${guildId}`).value;
@@ -152,9 +185,15 @@ function saveUser(userId, guildId) {
     body: JSON.stringify(updatedUser)
   })
     .then(res => res.json())
-    .then(() => {
+    .then(async () => {
       editingUser = null;
-      showUsers(currentPage);
+      const card = document.querySelector(
+        `.user-card[data-user-id="${userId}"][data-guild-id="${guildId}"]`
+      );
+      if (card) {
+        const { user, username, avatarUrl } = await getUserCardData(userId, guildId);
+        card.outerHTML = renderSingleUserCard(user, false, username, avatarUrl);
+      }
     });
 }
 
