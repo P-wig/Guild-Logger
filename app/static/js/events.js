@@ -41,7 +41,7 @@ function showEvents(page = 1, perPage = 10) {
               <div style="flex:1;">
                 <strong>Event ID:</strong> ${event.event_id}<br>
                 <strong>Host ID:</strong> ${event.host_id}<br>
-                <strong>Date:</strong> ${event.date ? formatDateDMY(event.date) : ''}<br>
+                <strong>Date:</strong> ${event.date ? formatEventDateDMY(event.date) : ''}<br>
                 <strong>Guild ID:</strong> ${event.guild_id}<br>
               </div>
               <div style="display:flex;flex-direction:column;gap:8px;">

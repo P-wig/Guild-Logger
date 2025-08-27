@@ -3,20 +3,14 @@
 {% block content %}
 <div class="container" style="text-align: center; margin-top: 50px;">
   <h2 class="logo" style="color: #4e73df;">Admin Portal</h2>
-  <ul class="nav nav-tabs" id="adminTabs">
-    <li class="nav-item">
-      <a class="nav-link active" id="users-tab" href="#" onclick="showUsers()">Users</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="events-tab" href="#" onclick="showEvents()">Events</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="former-users-tab" href="#" onclick="showFormerUsers()">Former Users</a>
-    </li>
-  </ul>
+  <div class="admin-tabs">
+    <button class="admin-tab active" id="users-tab" onclick="showUsers()">Users</button>
+    <button class="admin-tab" id="events-tab" onclick="showEvents()">Events</button>
+    <button class="admin-tab" id="former-users-tab" onclick="showFormerUsers()">Former Users</button>
+  </div>
   <div id="tab-content" style="margin-top: 30px;"></div>
 </div>
 <script src="{{ url_for('static', filename='js/users.js') }}"></script>
-<script src="{{ url_for('static', filename='js/formerUsers.js') }}"></script>
 <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+<script src="{{ url_for('static', filename='js/formerUsers.js') }}"></script>
 {% endblock %}

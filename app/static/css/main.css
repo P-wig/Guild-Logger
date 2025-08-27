@@ -376,3 +376,41 @@ h3 {
   align-items: center;
   margin-top: 16px;
 }
+
+/* ADMIN TABS */
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 0;
+}
+
+.admin-tab {
+  background: #e2e6ea;
+  color: #4e73df;
+  border: 1px solid #d1d5db;
+  border-bottom: none;
+  padding: 12px 32px;
+  font-size: 1.1em;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 8px 8px 0 0;
+  margin-right: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-tab:not(.active) {
+  background: #f8f9fc;
+  color: #6c757d;
+  z-index: 0;
+}
+
+.admin-tab.active {
+  background: #fff;
+  color: #4e73df;
+  font-weight: bold;
+  box-shadow: 0 -2px 8px rgba(78,115,223,0.08);
+  z-index: 2;
+}

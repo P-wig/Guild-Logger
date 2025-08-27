@@ -115,6 +115,8 @@ def get_blueprint():
             event['event_id'] = str(event['event_id'])
             event['host_id'] = str(event['host_id'])
             event['guild_id'] = str(event['guild_id'])
+            # Format the date as YYYY-MM-DD
+            event['date'] = event['date'].strftime('%Y-%m-%d')
         cursor.close()
         return jsonify(events_list)
     
@@ -231,6 +233,7 @@ def get_blueprint():
         for user in former_users_list:
             user['user_id'] = str(user['user_id'])
             user['guild_id'] = str(user['guild_id'])
+            user['left_date'] = user['left_date'].strftime('%Y-%m-%d')
         cursor.close()
         return jsonify(former_users_list)
     

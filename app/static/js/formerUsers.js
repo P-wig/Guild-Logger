@@ -30,7 +30,7 @@ function showFormerUsers(page = 1, perPage = 10) {
             <div style="flex:1;">
               <strong>User ID:</strong> ${user.user_id}<br>
               <strong>Guild ID:</strong> ${user.guild_id}<br>
-              <strong>Left Date:</strong> ${formatDateDMY(user.left_date)}<br>
+              <strong>Left Date:</strong> ${formatFormerUserDateDMY(user.left_date)}<br>
             </div>
             <div style="display:flex;flex-direction:column;gap:8px;">
               <button onclick="confirmDeleteFormerUser('${user.user_id}', '${user.guild_id}')">Delete</button>
