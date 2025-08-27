@@ -14,7 +14,7 @@ def get_blueprint(oauth):
         access_token_url='https://discord.com/api/oauth2/token',
         authorize_url='https://discord.com/api/oauth2/authorize',
         api_base_url='https://discord.com/api/',
-        client_kwargs={'scope': 'identify'},
+        client_kwargs={'scope': 'identify guilds'},
     )
 
     @auth_blueprint.route('/auth/discord/login')
@@ -36,6 +36,7 @@ def get_blueprint(oauth):
         if user['id'] not in allowed_users:
             return render_template('access_denied.html'), 403
         session['user'] = user
+        session['discord_token'] = token['access_token']
         return redirect(url_for('main.render_home_page'))
 
     return auth_blueprint

@@ -22,7 +22,19 @@ def get_blueprint():
             return render_template('access_denied.html'), 403
         
         return render_template('admin.html')
-    
+
+    @admin_blueprint.route('/api/guilds')
+    def api_guilds():
+        discord_token = session.get('discord_token') # <-- initiallized in auth_route.py/callback
+        if not discord_token:
+            return jsonify([])
+
+        headers = {'Authorization': f'Bearer {discord_token}'}
+        resp = requests.get('https://discord.com/api/users/@me/guilds', headers=headers)
+        guilds = resp.json()
+        admin_guilds = [g for g in guilds if (g['owner'] or (int(g['permissions']) & 0x20))]
+        return jsonify([{'id': g['id'], 'name': g['name']} for g in admin_guilds])
+
     # User API routes
     @admin_blueprint.route('/api/users')
     def api_users():
@@ -33,13 +45,21 @@ def get_blueprint():
         per_page = int(request.args.get('per_page', 10))
         offset = (page - 1) * per_page
         search = request.args.get('search', '').strip()
+        guild_id = request.args.get('guild_id', None)
+        query = 'SELECT * FROM users'
+        params = []
+        where_clauses = []
+        if guild_id:
+            where_clauses.append('guild_id = %s')
+            params.append(guild_id)
         if search:
-            cursor.execute(
-                'SELECT * FROM users WHERE user_id LIKE %s LIMIT %s OFFSET %s',
-                (f'%{search}%', per_page, offset)
-            )
-        else:
-            cursor.execute('SELECT * FROM users LIMIT %s OFFSET %s', (per_page, offset))
+            where_clauses.append('user_id LIKE %s')
+            params.append(f'%{search}%')
+        if where_clauses:
+            query += ' WHERE ' + ' AND '.join(where_clauses)
+        query += ' LIMIT %s OFFSET %s'
+        params.extend([per_page, offset])
+        cursor.execute(query, tuple(params))
         users = cursor.fetchall()
         for user in users:
             user['user_id'] = str(user['user_id'])

@@ -77,8 +77,10 @@ async function renderUserCards(users) {
 }
 
 // Function to fetch and display users in a table
-function showUsers(page = 1, perPage = 10) {
-  fetch(`/admin/api/users?page=${page}&per_page=${perPage}`)
+function showUsers(page = 1, perPage = 10, guildId = window.selectedGuildId) {
+  let url = `/admin/api/users?page=${page}&per_page=${perPage}`;
+  if (guildId) url += `&guild_id=${guildId}`;
+  fetch(url)
     .then(response => response.json())
     .then(users => {
       currentUsers = users;
