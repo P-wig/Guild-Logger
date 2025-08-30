@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container" style="text-align: center; margin-top: 50px;">
+<div class="container" style="text-align: center;">
   <h2 class="logo" style="color: #4e73df;">Admin Portal</h2>
   <div class="admin-flex-row">
     <div class="admin-guild-select">
@@ -18,12 +18,9 @@
   </div>
   <div class="admin-frame">
     <div class="admin-frame-header">
-      <div class="admin-header-row">
-        <!-- Guild select and tabs here -->
-      </div>
       <div id="search-bar-container"></div>
     </div>
-    <div id="tab-content" style="margin-top: 30px;"></div>
+    <div id="tab-content"></div>
   </div>
 </div>
 <script src="{{ url_for('static', filename='js/guilds.js') }}"></script>

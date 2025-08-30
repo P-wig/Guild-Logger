@@ -381,9 +381,9 @@ h3 {
 .admin-tabs {
   display: flex;
   justify-content: center;
-  margin-bottom: 0; /* Remove bottom margin */
+  margin-bottom: -1.5px; /* Overlap the frame's top border */
   gap: 0;
-  border-bottom: 1.5px solid #e2e6ea; /* Add border to match frame */
+  border-bottom: none;
   border-radius: 18px 18px 0 0; /* Match frame's top corners */
   overflow: hidden; /* Prevent tabs from spilling out */
 }
@@ -391,7 +391,7 @@ h3 {
 .admin-tab {
   background: #e2e6ea;
   color: #4e73df;
-  border: 1px solid #d1d5db;
+  border: none;
   border-bottom: none;
   padding: 12px 32px;
   font-size: 1.1em;
@@ -405,19 +405,19 @@ h3 {
   height: 48px;
 }
 
-.admin-tab:not(.active) {
-  background: #f8f9fc;
-  color: #6c757d;
-  z-index: 0;
+.admin-tab.active {
+  background: #515861; /* Same as admin frame */
+  color: #7289da;
+  font-weight: bold;
+  box-shadow: none;
+  z-index: 2;
+  border-bottom: none;
 }
 
-.admin-tab.active {
-  background: #fff;
-  color: #4e73df;
-  font-weight: bold;
-  box-shadow: 0 -2px 8px rgba(78,115,223,0.08);
-  z-index: 2;
-  border-bottom: 1.5px solid #fff; /* Make active tab blend into frame */
+.admin-tab:not(.active) {
+  background: #6a7180; /* Slightly lighter than #515861 */
+  color: #99aab5;
+  z-index: 0;
 }
 
 /* GUILD SELECT STYLES */
@@ -486,7 +486,8 @@ h3 {
   justify-content: center;
   align-items: center; /* Ensures vertical centering */
   gap: 18px;
-  margin-bottom: 30px;
+  margin-bottom: 0;
+  padding-bottom: 0 !important;
 }
 
 .admin-guild-select,
@@ -499,17 +500,31 @@ h3 {
 
 /* ADMIN FRAME STYLES */
 .admin-frame {
-  background: #fff;
+  background: #515861;
   border-radius: 18px;
-  box-shadow: 0 4px 24px #0002;
   max-width: 1000px;
-  margin: 40px auto;
+  margin: 0 auto 40px auto;
   padding: 0 0 32px 0;
-  border: 1.5px solid #e2e6ea;
+  border: none; /* Remove border */
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 .admin-frame-header {
-  padding: 24px 32px 0 32px;
+  padding-top: 32px; /* Remove any top padding */
+}
+
+.admin-tabs {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+}
+
+.admin-tab {
+  border: none;
+  border-bottom: none;
 }
 
 .admin-header-row {
@@ -530,10 +545,62 @@ h3 {
   margin-left: 12px;
 }
 
+/* Search bar row */
 .admin-search-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 0;
   margin-bottom: 0;
+  width: 100%;
+}
+
+/* Search input */
+.admin-search-row input[type="text"],
+.admin-search-row input[type="date"] {
+  background: #23272a;
+  color: #fff;
+  border: 1.5px solid #7289da;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 1em;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.admin-search-row input[type="text"]:focus,
+.admin-search-row input[type="date"]:focus {
+  border-color: #99aab5;
+}
+
+/* Search and Add User buttons */
+.admin-search-row button {
+  background: #36393f;
+  color: #7289da;
+  border: 2px solid #23272a;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s, color 0.2s;
+  flex: 0 0 auto;
+}
+
+.admin-search-row button:hover {
+  background: #7289da;
+  color: #fff;
+  border-color: #7289da;
+}
+
+.admin-search-row input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#search-bar-container {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 24px;
+  width: 950px;
+  max-width: 100%;
 }
