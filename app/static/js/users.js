@@ -302,5 +302,16 @@ function renderUserSearchBar() {
       <button onclick="searchUsers()">Search</button>
       <button onclick="toggleAddUserForm()">Add User</button>
     </div>
+    <div id="add-user-form" style="display:none;margin-top:10px;">
+      <input type="text" id="add-user-id" placeholder="User ID (as string)">
+      <input type="date" id="add-join-date" placeholder="Join Date">
+      <select id="add-status">
+        <option value="active">active</option>
+        <option value="retired">retired</option>
+      </select>
+      <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
+      <button class="save-btn" onclick="addUser()">Submit</button>
+      <button class="cancel-btn" onclick="toggleAddUserForm()">Cancel</button>
+    </div>
   `;
 }
