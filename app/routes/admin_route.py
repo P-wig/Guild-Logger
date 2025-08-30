@@ -33,7 +33,10 @@ def get_blueprint():
         resp = requests.get('https://discord.com/api/users/@me/guilds', headers=headers)
         guilds = resp.json()
         admin_guilds = [g for g in guilds if (g['owner'] or (int(g['permissions']) & 0x20))]
-        return jsonify([{'id': g['id'], 'name': g['name']} for g in admin_guilds])
+        return jsonify([
+            {'id': g['id'], 'name': g['name'], 'icon': g.get('icon')}
+            for g in admin_guilds
+        ])
 
     # User API routes
     @admin_blueprint.route('/api/users')

@@ -381,8 +381,11 @@ h3 {
 .admin-tabs {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 0; /* Remove bottom margin */
   gap: 0;
+  border-bottom: 1.5px solid #e2e6ea; /* Add border to match frame */
+  border-radius: 18px 18px 0 0; /* Match frame's top corners */
+  overflow: hidden; /* Prevent tabs from spilling out */
 }
 
 .admin-tab {
@@ -395,10 +398,11 @@ h3 {
   cursor: pointer;
   outline: none;
   transition: background 0.2s, color 0.2s;
-  border-radius: 8px 8px 0 0;
+  border-radius: 18px 18px 0 0; /* Match frame's top corners */
   margin-right: 2px;
   position: relative;
   z-index: 1;
+  height: 48px;
 }
 
 .admin-tab:not(.active) {
@@ -413,13 +417,12 @@ h3 {
   font-weight: bold;
   box-shadow: 0 -2px 8px rgba(78,115,223,0.08);
   z-index: 2;
+  border-bottom: 1.5px solid #fff; /* Make active tab blend into frame */
 }
 
 /* GUILD SELECT STYLES */
 .admin-guild-select {
-  display: inline-block;
   position: relative;
-  margin-right: 18px;
 }
 
 .guild-dropdown-btn {
@@ -429,13 +432,17 @@ h3 {
   padding: 12px 24px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
 }
 
 .guild-dropdown-list {
   position: absolute;
   left: 0;
-  top: 100%;
+  top: 110%;
   background: #fff;
   color: #23272a;
   border: 1px solid #d1d5db;
@@ -443,6 +450,7 @@ h3 {
   min-width: 220px;
   box-shadow: 0 2px 8px #0002;
   z-index: 10;
+  padding: 6px 0;
 }
 
 .guild-dropdown-list button {
@@ -450,11 +458,82 @@ h3 {
   border: none;
   width: 100%;
   text-align: left;
-  padding: 10px 18px;
+  padding: 8px 18px;
   cursor: pointer;
   font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.18s;
 }
 
 .guild-dropdown-list button:hover {
   background: #e2e6ea;
+}
+
+.guild-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f8f9fc;
+  border: 1px solid #d1d5db;
+}
+
+/* ADMIN FLEX ROW */
+.admin-flex-row {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Ensures vertical centering */
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.admin-guild-select,
+.admin-tabs {
+  display: flex;
+  align-items: center; /* Ensures children are centered vertically */
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* ADMIN FRAME STYLES */
+.admin-frame {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0002;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 0 32px 0;
+  border: 1.5px solid #e2e6ea;
+}
+
+.admin-frame-header {
+  padding: 24px 32px 0 32px;
+}
+
+.admin-header-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.admin-guild-select {
+  display: flex;
+  align-items: center;
+}
+
+.admin-tabs {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.admin-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  margin-bottom: 0;
 }

@@ -5,12 +5,15 @@ function toggleGuildDropdown() {
 
 // Call this after login to populate guilds
 function populateGuildDropdown(guilds) {
-  console.log('Guilds:', guilds);
   const list = document.getElementById('guild-dropdown-list');
   list.innerHTML = '';
   guilds.forEach(guild => {
     const btn = document.createElement('button');
-    btn.textContent = guild.name;
+    // Discord CDN for icons: https://cdn.discordapp.com/icons/{guild_id}/{icon}.png
+    const iconUrl = guild.icon
+      ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
+      : 'https://cdn.discordapp.com/embed/avatars/0.png';
+    btn.innerHTML = `<img class="guild-icon" src="${iconUrl}" alt="icon"> ${guild.name}`;
     btn.onclick = () => selectGuild(guild.id);
     list.appendChild(btn);
   });
@@ -34,3 +37,11 @@ function fetchAndPopulateGuilds() {
 
 // Call this after page load
 window.addEventListener('DOMContentLoaded', fetchAndPopulateGuilds);
+
+// Call the appropriate render function when switching tabs
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});

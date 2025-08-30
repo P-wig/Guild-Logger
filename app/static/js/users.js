@@ -91,28 +91,9 @@ function showUsers(page = 1, perPage = 10, guildId = window.selectedGuildId) {
         return;
       }
 
-      // Add User button and form at the top
-      let html = `
-        <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:12px;">
-          <input type="text" id="search-user-id" placeholder="Search User ID" style="padding:6px 10px;font-size:1em;">
-          <button onclick="searchUsers()">Search</button>
-          <button onclick="toggleAddUserForm()">Add User</button>
-          <div id="add-user-form" style="display:none;margin-top:10px;">
-            <input type="text" id="add-user-id" placeholder="User ID (as string)">
-            <input type="date" id="add-join-date" placeholder="Join Date">
-            <select id="add-status">
-              <option value="active">active</option>
-              <option value="retired">retired</option>
-            </select>
-            <input type="text" id="add-guild-id" placeholder="Guild ID (as string)">
-            <button onclick="addUser()">Submit</button>
-            <button onclick="toggleAddUserForm()">Cancel</button>
-          </div>
-        </div>
-        <div id="user-cards-container"></div>
-      `;
+      // Only render the user cards container and pagination controls
+      let html = `<div id="user-cards-container"></div>`;
 
-      // Pagination controls
       html += `
         <div style="margin-top:20px;">
           <button onclick="setPage(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
@@ -137,6 +118,9 @@ function showUsers(page = 1, perPage = 10, guildId = window.selectedGuildId) {
       }
 
       document.getElementById('tab-content').innerHTML = html;
+
+      // Render the search bar (if not already rendered)
+      renderUserSearchBar();
 
       // Now render the user cards
       renderUserCards(users);
@@ -309,4 +293,14 @@ function searchUsers() {
 function setPage(page, perPage) {
   currentPage = page;
   showUsers(currentPage, perPage);
+}
+
+function renderUserSearchBar() {
+  document.getElementById('search-bar-container').innerHTML = `
+    <div class="admin-search-row">
+      <input type="text" id="search-user-id" placeholder="Search User ID">
+      <button onclick="searchUsers()">Search</button>
+      <button onclick="toggleAddUserForm()">Add User</button>
+    </div>
+  `;
 }
