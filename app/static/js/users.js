@@ -128,13 +128,9 @@ function showUsers(page = 1, perPage = 10, guildId = window.selectedGuildId) {
 }
 
 async function editUser(userId, guildId) {
-  editingUser = { user_id: userId, guild_id: guildId };
-  const card = document.querySelector(
-    `.user-card[data-user-id="${userId}"][data-guild-id="${guildId}"]`
-  );
-  if (card) {
-    const { user, username, avatarUrl } = await getUserCardData(userId, guildId);
-    card.outerHTML = renderSingleUserCard(user, true, username, avatarUrl);
+  const user = currentUsers.find(u => u.user_id === userId && u.guild_id === guildId);
+  if (user) {
+    openEditUserModal(user);
   }
 }
 
@@ -152,10 +148,10 @@ async function cancelEditUser() {
   }
 }
 
-async function saveUser(userId, guildId) {
+async function saveUserModal(userId, guildId) {
   const user = currentUsers.find(u => u.user_id == userId && u.guild_id == guildId);
-  const joinDate = document.getElementById(`edit-join-date-${userId}-${guildId}`).value;
-  const status = document.getElementById(`edit-status-${userId}-${guildId}`).value;
+  const joinDate = document.getElementById('edit-join-date-modal').value;
+  const status = document.getElementById('edit-status-modal').value;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(joinDate)) {
     alert('Please enter a valid date in YYYY-MM-DD format.');
     return;
@@ -165,22 +161,25 @@ async function saveUser(userId, guildId) {
     join_date: joinDate,
     status: status
   };
-  fetch(`/admin/api/users/${userId}/${guildId}`, {
+  const res = await fetch(`/admin/api/users/${userId}/${guildId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updatedUser)
-  })
-    .then(res => res.json())
-    .then(async () => {
-      editingUser = null;
-      const card = document.querySelector(
-        `.user-card[data-user-id="${userId}"][data-guild-id="${guildId}"]`
-      );
-      if (card) {
-        const { user, username, avatarUrl } = await getUserCardData(userId, guildId);
-        card.outerHTML = renderSingleUserCard(user, false, username, avatarUrl);
-      }
-    });
+  });
+  await res.json();
+  closeEditUserModal();
+
+  // Update the user in currentUsers
+  Object.assign(user, updatedUser);
+
+  // Get updated Discord info
+  const { user: cardUser, username, avatarUrl } = await getUserCardData(userId, guildId);
+
+  // Replace only the updated card in the DOM
+  const card = document.querySelector(`.user-card[data-user-id="${userId}"][data-guild-id="${guildId}"]`);
+  if (card) {
+    card.outerHTML = renderSingleUserCard(cardUser, false, username, avatarUrl);
+  }
 }
 
 function confirmDeleteUser(userId, guildId) {
@@ -314,4 +313,53 @@ function renderUserSearchBar() {
       <button class="cancel-btn" onclick="toggleAddUserForm()">Cancel</button>
     </div>
   `;
+}
+
+async function openEditUserModal(user) {
+  // Remove any existing modal
+  const oldModal = document.querySelector('.custom-modal-overlay.edit-modal');
+  if (oldModal) oldModal.remove();
+
+  // Use your helper to get all card data
+  const { user: cardUser, username, avatarUrl } = await getUserCardData(user.user_id, user.guild_id);
+
+  const modalHtml = `
+    <div class="custom-modal-overlay edit-modal">
+      <div class="custom-modal">
+        <h3>Edit User</h3>
+        <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
+          <img src="${avatarUrl}" alt="Avatar" class="user-avatar" style="width:64px;height:64px;border-radius:50%;border:2px solid #7289da;">
+          <div>
+            <div class="user-name" style="font-size:1.2em;font-weight:bold;">${username}</div>
+            <div><strong>ID:</strong> ${cardUser.user_id}</div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label for="edit-join-date-modal"><strong>Join Date:</strong></label>
+          <input type="date" id="edit-join-date-modal" value="${cardUser.join_date}">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label for="edit-status-modal"><strong>Status:</strong></label>
+          <select id="edit-status-modal">
+            <option value="active" ${cardUser.status === 'active' ? 'selected' : ''}>active</option>
+            <option value="retired" ${cardUser.status === 'retired' ? 'selected' : ''}>retired</option>
+          </select>
+        </div>
+        <div class="custom-modal-actions">
+          <button onclick="saveUserModal('${cardUser.user_id}', '${cardUser.guild_id}')" class="save-btn">
+            <span class="icon-check"></span> Save
+          </button>
+          <button onclick="closeEditUserModal()" class="cancel-btn">
+            <span class="icon-cancel"></span> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeEditUserModal() {
+  const modal = document.querySelector('.custom-modal-overlay.edit-modal');
+  if (modal) modal.remove();
 }

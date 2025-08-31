@@ -1,0 +1,149 @@
+/* USER CARDS */
+#user-cards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 32px;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Card container */
+.user-card {
+  background: #23272a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 2px;
+  box-shadow: 0 2px 8px #0003;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card row layout */
+.user-card-row {
+  display: flex;
+  align-items: center; /* Ensures all children are vertically centered */
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Avatar */
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #7289da;
+  background: #2c2f33;
+  flex-shrink: 0;
+}
+
+/* Info section */
+.user-info {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.user-name {
+  text-align: left;
+  font-size: 1.2em;
+  font-weight: bold;
+  word-break: break-word;
+}
+
+.user-details {
+  display: flex;
+  gap: 10px;
+  font-size: 0.95em;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* Ensure all fields in user-details align to middle */
+.user-details > span,
+.user-details input[type="date"],
+.user-details select {
+  vertical-align: middle;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Remove extra margin from input/select inside user-details */
+.user-details input[type="date"],
+.user-details select {
+  margin-right: 4px;
+  height: 44px;         /* Match button min-height */
+  font-size: 1em;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+/* Make field labels smaller and italic */
+.user-details span > strong {
+  font-size: 0.85em;
+  font-style: italic;
+  font-weight: normal;
+  color: #bbb;
+  margin-right: 1px;
+}
+
+/* Edit form fields inside cards */
+.user-card input[type="date"],
+.user-card select {
+  background: #2c2f33;
+  color: #fff;
+  border: 1.5px solid #7289da;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 1em;
+  margin-right: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.user-card input[type="date"]:focus,
+.user-card select:focus {
+  border-color: #99aab5;
+}
+
+.user-card input[type="date"] {
+  width: 130px; /* or 140px if you want it wider */
+  min-width: 0;
+  font-size: 0.95em;
+  padding: 4px 8px;
+  background: #2c2f33;
+  color: #fff;
+  border: 1.5px solid #7289da;
+  border-radius: 6px;
+  margin-right: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.user-details span {
+  height: 44px;         /* Match button min-height */
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}

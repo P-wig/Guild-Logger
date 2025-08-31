@@ -9,16 +9,16 @@ body {
 
 /* HEADER & NAVIGATION */
 header {
-  background-color: #2B2B2B;
+  background-color: #2b2b2b;
   height: 60px;
   width: 100%;
-  opacity: .9;
+  opacity: 0.9;
   margin-bottom: 10px;
 }
 
 header h1.logo {
   margin: 0;
-  font-size: 2.0em;
+  font-size: 2em;
   color: #fff;
   text-transform: uppercase;
   float: left;
@@ -83,156 +83,9 @@ h3 {
 
 /* FLASH MESSAGES */
 .flash {
-  background-color: #FBB0B0;
+  background-color: #fbb0b0;
   padding: 10px;
   width: 400px;
-}
-
-/* ADMIN FRAME STYLES */
-.admin-frame {
-  background: #515861;
-  border-radius: 18px;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto 40px auto;
-  padding: 0 0 32px 0;
-  border: none;
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-.admin-frame-header {
-  padding-top: 32px; /* Remove any top padding */
-}
-
-/* ADMIN FLEX ROW */
-.admin-flex-row {
-  display: flex;
-  justify-content: center;
-  align-items: center; /* Ensures vertical centering */
-  gap: 18px;
-  margin-bottom: 0;
-  padding-bottom: 0 !important;
-}
-
-.admin-header-row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 12px;
-}
-
-.admin-guild-select,
-.admin-tabs {
-  display: flex;
-  align-items: center; /* Ensures children are centered vertically */
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.admin-guild-select {
-  position: relative;
-}
-
-.admin-tabs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 12px;
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  gap: 0;
-  border-bottom: none;
-  border-radius: 18px 18px 0 0; /* Match frame's top corners */
-  overflow: hidden; /* Prevent tabs from spilling out */
-}
-
-.admin-tab {
-  background: #e2e6ea;
-  color: #4e73df;
-  border: none;
-  border-bottom: none;
-  padding: 12px 32px;
-  font-size: 1.1em;
-  cursor: pointer;
-  outline: none;
-  transition: background 0.2s, color 0.2s;
-  border-radius: 18px 18px 0 0; /* Match frame's top corners */
-  margin-right: 2px;
-  position: relative;
-  z-index: 1;
-  height: 48px;
-}
-
-.admin-tab.active {
-  background: #515861; /* Same as admin frame */
-  color: #7289da;
-  font-weight: bold;
-  box-shadow: none;
-  z-index: 2;
-  border-bottom: none;
-}
-
-.admin-tab:not(.active) {
-  background: #6a7180; /* Slightly lighter than #515861 */
-  color: #99aab5;
-  z-index: 0;
-}
-
-/* GUILD SELECT STYLES */
-.guild-dropdown-btn {
-  background: #7289da;
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 48px;
-}
-
-.guild-dropdown-list {
-  position: absolute;
-  left: 0;
-  top: 110%;
-  background: #fff;
-  color: #23272a;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  min-width: 220px;
-  box-shadow: 0 2px 8px #0002;
-  z-index: 10;
-  padding: 6px 0;
-}
-
-.guild-dropdown-list button {
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
-  padding: 8px 18px;
-  cursor: pointer;
-  font-size: 1em;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background 0.18s;
-}
-
-.guild-dropdown-list button:hover {
-  background: #e2e6ea;
-}
-
-.guild-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #f8f9fc;
-  border: 1px solid #d1d5db;
 }
 
 /* SEARCH BAR */
@@ -242,7 +95,7 @@ h3 {
   padding-left: 24px;
   padding-right: 24px;
   width: 100%;
-  max-width: 1200px; /* Match admin frame/user cards */
+  max-width: 1200px;
   box-sizing: border-box;
 }
 
@@ -297,144 +150,7 @@ h3 {
   border-color: #7289da;
 }
 
-/* USER CARDS */
-#user-cards-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  margin-top: 32px;
-  padding-left: 24px;
-  padding-right: 24px;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-/* Card container */
-.user-card {
-  background: #23272a;
-  color: #fff;
-  border-radius: 12px;
-  padding: 18px 24px;
-  margin-bottom: 2px;
-  box-shadow: 0 2px 8px #0003;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Card row layout */
-.user-card-row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  width: 100%;
-  box-sizing: border-box;
-  flex-wrap: wrap;
-}
-
-/* Avatar */
-.user-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #7289da;
-  background: #2c2f33;
-  flex-shrink: 0;
-}
-
-/* Info section */
-.user-info {
-  flex: 1 1 200px;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.user-name {
-  text-align: left;
-  font-size: 1.2em;
-  font-weight: bold;
-  word-break: break-word;
-}
-
-.user-details {
-  display: flex;
-  gap: 10px;
-  font-size: 0.95em;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-/* Ensure all fields in user-details align to middle */
-.user-details > span,
-.user-details input[type="date"],
-.user-details select {
-  vertical-align: middle;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  display: inline-flex;
-  align-items: center;
-}
-
-/* Remove extra margin from input/select inside user-details */
-.user-details input[type="date"],
-.user-details select {
-  margin-right: 4px;
-}
-
-/* Make field labels smaller and italic */
-.user-details span > strong {
-  font-size: 0.85em;
-  font-style: italic;
-  font-weight: normal;
-  color: #bbb;
-  margin-right: 1px;
-}
-
-/* Edit form fields inside cards */
-.user-card input[type="date"],
-.user-card select {
-  background: #2c2f33;
-  color: #fff;
-  border: 1.5px solid #7289da;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 1em;
-  margin-right: 8px;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  outline: none;
-  transition: border 0.2s;
-}
-
-.user-card input[type="date"]:focus,
-.user-card select:focus {
-  border-color: #99aab5;
-}
-
-.user-card input[type="date"] {
-  width: 130px;
-  min-width: 0;
-  font-size: 0.95em;
-  padding: 4px 8px;
-  background: #2c2f33;
-  color: #fff;
-  border: 1.5px solid #7289da;
-  border-radius: 6px;
-  margin-right: 8px;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  outline: none;
-  transition: border 0.2s;
-}
-
-/* USER CARD ACTIONS */
+/* USER ACTIONS */
 .user-actions {
   display: flex;
   flex-direction: row;
@@ -442,20 +158,6 @@ h3 {
   justify-content: flex-end;
   align-items: center;
   flex-shrink: 0;
-}
-
-.user-actions .save-btn,
-.user-actions .cancel-btn,
-.user-actions .edit-btn,
-.user-actions .delete-btn {
-  min-width: 44px;
-  min-height: 44px;
-  font-size: 1em;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Unified button styles for all user actions and forms */
@@ -477,53 +179,46 @@ h3 {
   margin: 0 4px;
 }
 
-/* Individual button hover colors */
 .edit-btn:hover {
   background: #7289da;
   border-color: #7289da;
   color: #fff;
 }
+
 .delete-btn {
   border-color: #ff5555;
-  color: #7289da; /* Default text/icon color */
+  color: #7289da;
 }
+
 .delete-btn:hover {
   background: #ff5555 !important;
   border-color: #ff5555 !important;
-  color: #fff !important; /* Text/icon turns white on hover */
+  color: #fff !important;
 }
+
 .delete-btn .icon-x::before {
-  color: #ff5555; /* Default icon color */
+  color: #ff5555;
   transition: color 0.2s;
 }
+
 .delete-btn:hover .icon-x::before {
-  color: #fff !important; /* Icon turns white on hover */
+  color: #fff !important;
 }
+
 .save-btn:hover {
   background: #43b581;
   border-color: #43b581;
   color: #fff;
 }
+
 .cancel-btn {
   border-color: #ff5555;
 }
+
 .cancel-btn:hover {
   background: #ff5555;
   border-color: #ff5555;
   color: #fff;
-}
-
-/* Adjusted save and cancel button styles in user-actions */
-.user-actions .save-btn,
-.user-actions .cancel-btn {
-  min-width: 44px;
-  min-height: 44px;
-  font-size: 1em;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Unified icon styles for all action buttons */
@@ -536,12 +231,12 @@ h3 {
   vertical-align: middle;
 }
 
-/* Individual icon colors */
 .icon-gear::before {
   content: "\2699";
   color: #7289da;
   transition: color 0.2s;
 }
+
 .edit-btn:hover .icon-gear::before {
   color: #fff;
 }
@@ -557,6 +252,7 @@ h3 {
   color: #43b581;
   transition: color 0.2s;
 }
+
 .save-btn:hover .icon-check::before {
   color: #fff;
 }
@@ -566,6 +262,7 @@ h3 {
   color: #ff5555;
   transition: color 0.2s;
 }
+
 .cancel-btn:hover .icon-cancel::before {
   color: #fff;
 }
@@ -664,4 +361,139 @@ h3 {
   margin-top: 0;
   margin-bottom: 0;
   height: 44px; /* Match button min-height */
+}
+
+/* ADMIN FRAME STYLES */
+.admin-frame {
+  background: #515861;
+  border-radius: 18px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 40px auto;
+  padding: 0 0 32px 0;
+  border: none;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+.admin-frame-header {
+  padding-top: 32px;
+}
+
+/* ADMIN FLEX ROW */
+.admin-flex-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 0;
+  padding-bottom: 0 !important;
+}
+.admin-header-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+.admin-guild-select,
+.admin-tabs {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.admin-guild-select {
+  position: relative;
+}
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 12px;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  gap: 0;
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+}
+.admin-tab {
+  background: #e2e6ea;
+  color: #4e73df;
+  border: none;
+  border-bottom: none;
+  padding: 12px 32px;
+  font-size: 1.1em;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 18px 18px 0 0;
+  margin-right: 2px;
+  position: relative;
+  z-index: 1;
+  height: 48px;
+}
+.admin-tab.active {
+  background: #515861;
+  color: #7289da;
+  font-weight: bold;
+  box-shadow: none;
+  z-index: 2;
+  border-bottom: none;
+}
+.admin-tab:not(.active) {
+  background: #6a7180;
+  color: #99aab5;
+  z-index: 0;
+}
+
+/* GUILD SELECT STYLES */
+.guild-dropdown-btn {
+  background: #7289da;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+}
+.guild-dropdown-list {
+  position: absolute;
+  left: 0;
+  top: 110%;
+  background: #fff;
+  color: #23272a;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  min-width: 220px;
+  box-shadow: 0 2px 8px #0002;
+  z-index: 10;
+  padding: 6px 0;
+}
+.guild-dropdown-list button {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.18s;
+}
+.guild-dropdown-list button:hover {
+  background: #e2e6ea;
+}
+.guild-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f8f9fc;
+  border: 1px solid #d1d5db;
 }
