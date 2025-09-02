@@ -43,31 +43,91 @@ def get_blueprint():
     def api_users():
         db = current_app.get_db()
         cursor = db.cursor(pymysql.cursors.DictCursor)
-        # Get pagination params from query string, with defaults
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 10))
         offset = (page - 1) * per_page
         search = request.args.get('search', '').strip()
         guild_id = request.args.get('guild_id', None)
-        query = 'SELECT * FROM users'
-        params = []
+
         where_clauses = []
+        params = []
         if guild_id:
-            where_clauses.append('guild_id = %s')
+            where_clauses.append('u.guild_id = %s')
             params.append(guild_id)
         if search:
-            where_clauses.append('user_id LIKE %s')
+            where_clauses.append('u.user_id LIKE %s')
             params.append(f'%{search}%')
-        if where_clauses:
-            query += ' WHERE ' + ' AND '.join(where_clauses)
-        query += ' LIMIT %s OFFSET %s'
+        where_sql = ' WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''
+
+        query = f"""
+            SELECT
+                u.*,
+                COUNT(DISTINCT e.event_id) AS total_events_hosted,
+                COUNT(DISTINCT ea.event_id) AS total_events_attended
+            FROM users u
+            LEFT JOIN events e ON e.host_id = u.user_id AND e.guild_id = u.guild_id
+            LEFT JOIN event_attendees ea ON ea.user_id = u.user_id
+            {where_sql}
+            GROUP BY u.user_id, u.guild_id
+            LIMIT %s OFFSET %s
+        """
         params.extend([per_page, offset])
         cursor.execute(query, tuple(params))
         users = cursor.fetchall()
+
+        # Format user fields
         for user in users:
             user['user_id'] = str(user['user_id'])
             user['guild_id'] = str(user['guild_id'])
             user['join_date'] = user['join_date'].strftime('%Y-%m-%d')
+
+        # Get consecutive main events missed for all users on the page
+        user_ids = [user['user_id'] for user in users]
+        guild_ids = [user['guild_id'] for user in users]
+        if users:
+            # ---------------------------------------------------------------
+            # This query calculates the number of consecutive main events missed
+            # for each user on the current page.
+            #
+            # Steps:
+            # 1. For each user, join all events in their guild (no event type filter).
+            # 2. Attach RSVP info for each user/event from MainEventRSVP using main_event_id.
+            # 3. Only consider users and guilds on the current page (pagination).
+            # 4. Only include events that have already occurred (e.date < NOW()).
+            # 5. In the subquery, select events where RSVP is still 'pending'
+            #    and the event date has already passed (i.e., missed RSVP).
+            # 6. Group results by user and guild to get the count of missed events.
+            # ---------------------------------------------------------------
+            cursor.execute(f"""
+                SELECT
+                    sub.user_id,
+                    sub.guild_id,
+                    COUNT(*) AS consecutive_main_events_missed
+                FROM (
+                    SELECT
+                        u.user_id,
+                        u.guild_id,
+                        e.event_id,
+                        e.date,
+                        r.rsvp_status
+                    FROM users u
+                    JOIN events e ON e.guild_id = u.guild_id
+                    LEFT JOIN MainEventRSVP r ON r.main_event_id = e.event_id AND r.user_id = u.user_id
+                    WHERE u.user_id IN ({','.join(['%s']*len(user_ids))}) AND u.guild_id IN ({','.join(['%s']*len(guild_ids))})
+                    AND e.date < NOW()
+                    ORDER BY e.date DESC
+                ) sub
+                WHERE sub.rsvp_status = 'pending' AND sub.date < NOW()
+                GROUP BY sub.user_id, sub.guild_id
+            """, tuple(user_ids + guild_ids))
+            missed_map = {(row['user_id'], row['guild_id']): row['consecutive_main_events_missed'] for row in cursor.fetchall()}
+        else:
+            missed_map = {}
+
+        for user in users:
+            key = (user['user_id'], user['guild_id'])
+            user['consecutive_main_events_missed'] = missed_map.get(key, 0)
+
         return jsonify(users)
 
     @admin_blueprint.route('/api/users/<user_id>/<guild_id>', methods=['PUT'])

@@ -36,6 +36,9 @@ function renderSingleUserCard(user, isEditing, username, avatarUrl) {
                   </select>`
                 : user.status
             }</span>
+            <span><strong>Consecutive Main Events Missed:</strong> ${user.consecutive_main_events_missed ?? 0}</span>
+            <span><strong>Total Events Hosted:</strong> ${user.total_events_hosted ?? 0}</span>
+            <span><strong>Total Events Attended:</strong> ${user.total_events_attended ?? 0}</span>
           </div>
         </div>
         <div class="user-actions">
