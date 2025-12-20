@@ -8,13 +8,6 @@
 #   In the command selection text box, type "Python Create"
 #   From the options dropdown select "Python Create Environment"
 #   From the next options dropdown select "venv"
-
-# Google Mail:  Use your current Google mail account or create a new one:
-#   Use this link to create an "App Password" that will allow this program to use the 
-#   Gmail acccount to send the email to the email address to the account specified
-#   in the contact form.
-#
-# After the above and setting up the database, you should be able to run and debug this program
 import sys 
 import os
 import threading

@@ -10,6 +10,10 @@ COPY . .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create a non-root user and switch to it
+RUN useradd --create-home appuser
+USER appuser
+
 # Expose the port that the app runs on
 EXPOSE 5000
 
