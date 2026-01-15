@@ -36,7 +36,7 @@ function renderSingleUserCard(user, isEditing, username, avatarUrl) {
                   </select>`
                 : user.status
             }</span>
-            <span><strong>Consecutive Main Events Missed:</strong> ${user.consecutive_main_events_missed ?? 0}</span>
+            <span><strong>Consecutive Live Events Missed:</strong> ${user.consecutive_live_events_missed ?? 0}</span>
             <span><strong>Total Events Hosted:</strong> ${user.total_events_hosted ?? 0}</span>
             <span><strong>Total Events Attended:</strong> ${user.total_events_attended ?? 0}</span>
           </div>
@@ -94,11 +94,11 @@ function showUsers(page = 1, perPage = 10, guildId = window.selectedGuildId) {
         return;
       }
 
-      // Only render the user cards container and pagination controls
-      let html = `<div id="user-cards-container"></div>`;
+      // Add padding to match former users page
+      let html = `<div id="user-cards-container" style="padding: 20px 20px 0 20px; margin-top: 15px;"></div>`;
 
       html += `
-        <div style="margin-top:20px;">
+        <div style="margin-top:20px; padding: 0 20px;">
           <button onclick="setPage(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
           <span style="margin:0 10px;">Page ${page}</span>
           <button onclick="setPage(${page + 1}, ${perPage})" ${(users.length < perPage) ? 'disabled' : ''}>Next</button>
@@ -302,7 +302,7 @@ function renderUserSearchBar() {
     <div class="admin-search-row">
       <input type="text" id="search-user-id" placeholder="Search User ID">
       <button onclick="searchUsers()">Search</button>
-      <button onclick="toggleAddUserForm()">Add User</button>
+      <button onclick="toggleAddUserForm()">Add</button>
     </div>
     <div id="add-user-form" style="display:none;margin-top:10px;">
       <input type="text" id="add-user-id" placeholder="User ID (as string)">

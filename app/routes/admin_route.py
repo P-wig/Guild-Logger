@@ -102,7 +102,7 @@ def get_blueprint():
                 SELECT
                     sub.user_id,
                     sub.guild_id,
-                    COUNT(*) AS consecutive_main_events_missed
+                    COUNT(*) AS consecutive_live_events_missed
                 FROM (
                     SELECT
                         u.user_id,
@@ -112,7 +112,7 @@ def get_blueprint():
                         r.rsvp_status
                     FROM users u
                     JOIN events e ON e.guild_id = u.guild_id
-                    LEFT JOIN MainEventRSVP r ON r.main_event_id = e.event_id AND r.user_id = u.user_id
+                    LEFT JOIN LiveEventRSVP r ON r.main_event_id = e.event_id AND r.user_id = u.user_id
                     WHERE u.user_id IN ({','.join(['%s']*len(user_ids))}) AND u.guild_id IN ({','.join(['%s']*len(guild_ids))})
                     AND e.date < NOW()
                     ORDER BY e.date DESC
@@ -120,13 +120,13 @@ def get_blueprint():
                 WHERE sub.rsvp_status = 'pending' AND sub.date < NOW()
                 GROUP BY sub.user_id, sub.guild_id
             """, tuple(user_ids + guild_ids))
-            missed_map = {(row['user_id'], row['guild_id']): row['consecutive_main_events_missed'] for row in cursor.fetchall()}
+            missed_map = {(row['user_id'], row['guild_id']): row['consecutive_live_events_missed'] for row in cursor.fetchall()}
         else:
             missed_map = {}
 
         for user in users:
             key = (user['user_id'], user['guild_id'])
-            user['consecutive_main_events_missed'] = missed_map.get(key, 0)
+            user['consecutive_live_events_missed'] = missed_map.get(key, 0)
 
         return jsonify(users)
 
@@ -152,11 +152,35 @@ def get_blueprint():
     @admin_blueprint.route('/api/users/<user_id>/<guild_id>', methods=['DELETE'])
     def delete_user(user_id, guild_id):
         db = current_app.get_db()
-        cursor = db.cursor()
-        cursor.execute("DELETE FROM users WHERE user_id=%s AND guild_id=%s", (user_id, guild_id))
-        db.commit()
-        cursor.close()
-        return jsonify({'success': True})
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        
+        try:
+            # First, get the user data before deleting
+            cursor.execute("SELECT * FROM users WHERE user_id=%s AND guild_id=%s", (user_id, guild_id))
+            user = cursor.fetchone()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Insert the user into former_users table with current date as left_date
+            cursor.execute(
+                "INSERT INTO former_users (user_id, guild_id, left_date) VALUES (%s, %s, CURDATE())",
+                (user_id, guild_id)
+            )
+            
+            # Now delete the user from the users table
+            cursor.execute("DELETE FROM users WHERE user_id=%s AND guild_id=%s", (user_id, guild_id))
+            
+            db.commit()
+            cursor.close()
+            return jsonify({'success': True, 'message': 'User moved to former users'})
+            
+        except Exception as e:
+            db.rollback()
+            cursor.close()
+            if "Duplicate entry" in str(e):
+                return jsonify({'success': False, 'error': 'User already exists in former users'}), 400
+            return jsonify({'success': False, 'error': str(e)}), 400
 
     @admin_blueprint.route('/api/users', methods=['POST'])
     def add_user():

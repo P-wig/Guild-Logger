@@ -1,31 +1,57 @@
 let currentEvents = [];
-let editingEvent = null; // { event_id }
-let eventToDelete = null; // { event_id }
-let attendeesModalEventId = null;
+let eventToDelete = null;
+let currentEventPage = 1;
+let editModalEventId = null;
 let currentAttendees = [];
 
-// Function to fetch and display events in a table
+// Function to fetch and display events
 function showEvents(page = 1, perPage = 10) {
   fetch(`/admin/api/events?page=${page}&per_page=${perPage}`)
     .then(response => response.json())
     .then(events => {
       currentEvents = events;
-      
-      // Render the search bar
+
+      if (events.length === 0 && page > 1) {
+        setEventPage(page - 1, perPage);
+        return;
+      }
+
+      let html = `<div id="event-cards-container" style="padding: 20px 20px 0 20px; margin-top: 15px;"></div>`;
+
+      html += `
+        <div style="margin-top:20px; padding: 0 20px;">
+          <button onclick="setEventPage(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
+          <span style="margin:0 10px;">Page ${page}</span>
+          <button onclick="setEventPage(${page + 1}, ${perPage})" ${events.length < perPage ? 'disabled' : ''}>Next</button>
+        </div>
+      `;
+
+      if (eventToDelete) {
+        html += `
+          <div class="custom-modal-overlay">
+            <div class="custom-modal">
+              <p>Are you sure you want to delete this event?</p>
+              <div class="custom-modal-actions">
+                <button onclick="deleteEventConfirmed()"><span class="icon-x"></span> Yes, Delete</button>
+                <button onclick="cancelDeleteEvent()" class="cancel-btn"><span class="icon-cancel"></span> Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('tab-content').innerHTML = html;
       renderEventSearchBar();
-      
-      // Render the content
-      renderEventContent(events, page, perPage);
+      renderEventCards(events);
     });
 }
 
-// Add this function to events.js
 function renderEventSearchBar() {
   document.getElementById('search-bar-container').innerHTML = `
     <div class="admin-search-row">
       <input type="text" id="search-event-host" placeholder="Search by Host ID">
       <button onclick="searchEvents()">Search</button>
-      <button onclick="toggleAddEventForm()">Add Event</button>
+      <button onclick="toggleAddEventForm()">Add</button>
     </div>
     <div id="add-event-form" style="display:none;margin-top:10px;">
       <input type="text" id="add-host-id" placeholder="Host ID (as string)">
@@ -37,93 +63,53 @@ function renderEventSearchBar() {
   `;
 }
 
-// Add search function for events
+function renderSingleEventCard(event) {
+  let html = `
+    <div class="user-card" data-event-id="${event.event_id}">
+      <div class="user-card-row">
+        <div class="event-icon" style="width: 64px; height: 64px; border-radius: 50%; background: #7289da; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+          E
+        </div>
+        <div class="user-info">
+          <div class="user-name">Event ${event.event_id}</div>
+          <div class="user-details">
+            <span><strong>Host ID:</strong> ${event.host_id}</span>
+            <span><strong>Date:</strong> ${formatEventDateDMY(event.date)}</span>
+            <span><strong>Guild ID:</strong> ${event.guild_id}</span>
+          </div>
+        </div>
+        <div class="user-actions">
+          <button class="edit-btn" title="Edit" onclick="openEditEventModal('${event.event_id}')">
+            <span class="icon-gear"></span>
+          </button>
+          <button class="delete-btn" title="Delete" onclick="confirmDeleteEvent('${event.event_id}')">
+            <span class="icon-x"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  return html;
+}
+
+function renderEventCards(events) {
+  let html = '';
+  for (const event of events) {
+    html += renderSingleEventCard(event);
+  }
+  document.getElementById('event-cards-container').innerHTML = html;
+}
+
 function searchEvents() {
   const hostId = document.getElementById('search-event-host').value.trim();
   fetch(`/admin/api/events?search=${encodeURIComponent(hostId)}`)
     .then(response => response.json())
     .then(events => {
       currentEvents = events;
-      // Re-render just the events content
-      renderEventContent(events);
+      renderEventCards(events);
     });
 }
 
-// Extract content rendering (move your existing event card rendering logic here)
-function renderEventContent(events, page = 1, perPage = 10) {
-  let html = '';
-  
-  html += '<div class="event-cards" style="display:flex;flex-direction:column;gap:16px;align-items:center;">';
-  events.forEach(event => {
-    if (editingEvent && editingEvent.event_id === event.event_id) {
-      html += `
-        <div class="event-card" style="border:1px solid #ccc;padding:16px;border-radius:8px;width:250px;">
-          <label>Event ID: <span>${event.event_id}</span></label><br>
-          <label>Host ID: <input type="text" id="edit-host-id-${event.event_id}" value="${event.host_id}"></label><br>
-          <label>Date: <input type="date" id="edit-date-${event.event_id}" value="${event.date ? event.date.substring(0, 10) : ''}"></label><br>
-          <label>Guild ID: <input type="text" id="edit-guild-id-${event.event_id}" value="${event.guild_id}"></label><br>
-          <button onclick="saveEvent('${event.event_id}')">Save</button>
-          <button onclick="cancelEditEvent()">Cancel</button>
-        </div>
-      `;
-    } else {
-      html += `
-        <div class="event-card" style="display:flex;align-items:center;gap:24px;border:1px solid #ccc;padding:16px;border-radius:8px;width:600px;max-width:90vw;">
-          <div style="flex:1;">
-            <strong>Event ID:</strong> ${event.event_id}<br>
-            <strong>Host ID:</strong> ${event.host_id}<br>
-            <strong>Date:</strong> ${event.date ? formatEventDateDMY(event.date) : ''}<br>
-            <strong>Guild ID:</strong> ${event.guild_id}<br>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <button onclick="editEvent('${event.event_id}')">Edit</button>
-            <button onclick="confirmDeleteEvent('${event.event_id}')">Delete</button>
-            <button onclick="openAttendeesModal('${event.event_id}')">Manage Attendees</button>
-          </div>
-        </div>
-      `;
-    }
-  });
-  html += '</div>';
-
-  // Pagination controls
-  html += `
-    <div style="margin-top:20px;">
-      <button onclick="showEvents(${page - 1}, ${perPage})" ${page <= 1 ? 'disabled' : ''}>Previous</button>
-      <span style="margin:0 10px;">Page ${page}</span>
-      <button onclick="showEvents(${page + 1}, ${perPage})" ${events.length < perPage ? 'disabled' : ''}>Next</button>
-    </div>
-  `;
-
-  document.getElementById('tab-content').innerHTML = html;
-}
-
-// Add this function to fetch and display attendees for an event
-function showEventAttendees(eventId, btn) {
-  const attendeesDiv = document.getElementById(`attendees-${eventId}`);
-  if (attendeesDiv.style.display === "none") {
-    fetch(`/admin/api/events/${eventId}/attendees`)
-      .then(response => response.json())
-      .then(attendees => {
-        if (attendees.length === 0) {
-          attendeesDiv.innerHTML = "<em>No attendees found.</em>";
-        } else {
-          attendeesDiv.innerHTML = attendees.map(a =>
-            `<div style="border-bottom:1px solid #eee;padding:4px 0;">
-              <strong>User ID:</strong> ${a.user_id}<br>
-            </div>`
-          ).join('');
-        }
-        attendeesDiv.style.display = "block";
-        btn.textContent = "Hide Attendees";
-      });
-  } else {
-    attendeesDiv.style.display = "none";
-    btn.textContent = "Show Attendees";
-  }
-}
-
-// Function to toggle the display of the event addition form
 function toggleAddEventForm() {
   const form = document.getElementById('add-event-form');
   form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -155,112 +141,128 @@ function addEvent() {
     });
 }
 
-function editEvent(eventId) {
-  editingEvent = { event_id: eventId };
-  showEvents();
+function openEditEventModal(eventId) {
+  editModalEventId = eventId;
+  const event = currentEvents.find(e => e.event_id == eventId);
+  
+  // Fetch attendees first
+  fetch(`/admin/api/events/${eventId}/attendees`)
+    .then(res => res.json())
+    .then(attendees => {
+      currentAttendees = attendees.map(a => ({
+        user_id: String(a.user_id)
+      }));
+      renderEditEventModal(event);
+    });
 }
 
-function cancelEditEvent() {
-  editingEvent = null;
-  showEvents();
+function renderEditEventModal(event) {
+  // Remove any existing modal
+  document.querySelectorAll('.custom-modal-overlay.edit-modal').forEach(e => e.remove());
+
+  if (!editModalEventId) return;
+
+  let html = `
+    <div class="custom-modal-overlay edit-modal">
+      <div class="custom-modal" style="min-width: 500px;">
+        <h3>Edit Event ${event.event_id}</h3>
+        
+        <!-- Event Details Section -->
+        <div style="margin-bottom: 20px;">
+          <h4>Event Details</h4>
+          <div style="margin-bottom: 12px;">
+            <label for="edit-host-id-modal"><strong>Host ID:</strong></label>
+            <input type="text" id="edit-host-id-modal" value="${event.host_id}" style="width: 100%; margin-top: 5px;">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label for="edit-date-modal"><strong>Date:</strong></label>
+            <input type="date" id="edit-date-modal" value="${event.date ? event.date.substring(0, 10) : ''}" style="width: 100%; margin-top: 5px;">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label for="edit-guild-id-modal"><strong>Guild ID:</strong></label>
+            <input type="text" id="edit-guild-id-modal" value="${event.guild_id}" style="width: 100%; margin-top: 5px;">
+          </div>
+        </div>
+
+        <!-- Attendees Section -->
+        <div style="margin-bottom: 20px;">
+          <h4>Attendees</h4>
+          <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
+            ${currentAttendees.length === 0 ? '<p>No attendees</p>' : ''}
+            ${currentAttendees.map(a => `
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span>${String(a.user_id)}</span>
+                <button onclick="removeAttendeeFromModal('${String(a.user_id)}')" class="delete-btn" style="padding: 2px 6px;">Remove</button>
+              </div>
+            `).join('')}
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="add-attendee-user-id" placeholder="User ID to add" style="flex: 1;">
+            <button onclick="addAttendeeFromModal()" class="save-btn">Add</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="custom-modal-actions">
+          <button onclick="saveEventModal()" class="save-btn">
+            <span class="icon-check"></span> Save Changes
+          </button>
+          <button onclick="closeEditEventModal()" class="cancel-btn">
+            <span class="icon-cancel"></span> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', html);
 }
 
-function saveEvent(eventId) {
-  const event = currentEvents.find(e => e.event_id === eventId);
-  const hostId = document.getElementById(`edit-host-id-${eventId}`).value.trim();
-  const date = document.getElementById(`edit-date-${eventId}`).value;
-  const guildId = document.getElementById(`edit-guild-id-${eventId}`).value.trim();
+function closeEditEventModal() {
+  editModalEventId = null;
+  currentAttendees = [];
+  document.querySelectorAll('.custom-modal-overlay.edit-modal').forEach(e => e.remove());
+}
+
+function saveEventModal() {
+  const hostId = document.getElementById('edit-host-id-modal').value.trim();
+  const date = document.getElementById('edit-date-modal').value;
+  const guildId = document.getElementById('edit-guild-id-modal').value.trim();
 
   if (!hostId || !guildId || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     alert('Please fill all fields with valid data.');
     return;
   }
 
-  fetch(`/admin/api/events/${eventId}`, {
+  fetch(`/admin/api/events/${editModalEventId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ host_id: hostId, date, guild_id: guildId })
   })
     .then(res => res.json())
     .then(() => {
-      editingEvent = null;
-      showEvents();
+      // Update the event in currentEvents
+      const event = currentEvents.find(e => e.event_id == editModalEventId);
+      if (event) {
+        event.host_id = hostId;
+        event.date = date;
+        event.guild_id = guildId;
+        
+        // Re-render the card
+        renderEventCards(currentEvents);
+      }
+      closeEditEventModal();
     });
 }
 
-function confirmDeleteEvent(eventId) {
-  eventToDelete = { event_id: eventId };
-  showEvents();
-}
-
-function cancelDeleteEvent() {
-  eventToDelete = null;
-  showEvents();
-}
-
-function deleteEventConfirmed() {
-  fetch(`/admin/api/events/${eventToDelete.event_id}`, { method: 'DELETE' })
-    .then(res => res.json())
-    .then(() => {
-      eventToDelete = null;
-      showEvents();
-    });
-}
-
-function openAttendeesModal(eventId) {
-  attendeesModalEventId = eventId;
-  fetch(`/admin/api/events/${eventId}/attendees`)
-    .then(res => res.json())
-    .then(attendees => {
-      // Ensure all user_ids are strings
-      currentAttendees = attendees.map(a => ({
-        user_id: String(a.user_id)
-      }));
-      renderAttendeesModal();
-    });
-}
-
-function closeAttendeesModal() {
-  attendeesModalEventId = null;
-  currentAttendees = [];
-  // Remove modal from DOM
-  document.querySelectorAll('.modal-overlay').forEach(e => e.remove());
-}
-
-function renderAttendeesModal() {
-  // Remove any existing modal first
-  document.querySelectorAll('.modal-overlay').forEach(e => e.remove());
-
-  if (!attendeesModalEventId) return;
-
-  let html = `
-    <div class="modal-overlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:1000;">
-      <div class="modal" style="background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 8px #0002;min-width:300px;">
-        <h3>Attendees for Event ${attendeesModalEventId}</h3>
-        <ul style="list-style:none;padding:0;">
-          ${currentAttendees.map(a => `
-            <li style="margin-bottom:8px;">
-              <span>${String(a.user_id)}</span>
-              <button onclick="removeAttendee('${String(a.user_id)}')">Remove</button>
-            </li>
-          `).join('')}
-        </ul>
-        <input type="text" id="add-attendee-user-id" placeholder="User ID to add">
-        <button onclick="addAttendee()">Add Attendee</button>
-        <button onclick="closeAttendeesModal()">Close</button>
-      </div>
-    </div>
-  `;
-  // Append modal to body
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function addAttendee() {
+function addAttendeeFromModal() {
   const userId = document.getElementById('add-attendee-user-id').value.trim();
-
-  // Already a string, do NOT use parseInt or Number()
   
-  fetch(`/admin/api/events/${attendeesModalEventId}/attendees`, {
+  if (!userId) {
+    alert('Please enter a user ID.');
+    return;
+  }
+
+  fetch(`/admin/api/events/${editModalEventId}/attendees`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: userId })
@@ -268,38 +270,59 @@ function addAttendee() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        // Refresh attendee list
-        openAttendeesModal(attendeesModalEventId);
+        // Refresh the modal with updated attendees
+        openEditEventModal(editModalEventId);
       } else {
         alert('Failed to add attendee: ' + (data.error || 'Unknown error'));
       }
     });
 }
 
-function removeAttendee(userId) {
-  fetch(`/admin/api/events/${attendeesModalEventId}/attendees/${userId}`, {
+function removeAttendeeFromModal(userId) {
+  fetch(`/admin/api/events/${editModalEventId}/attendees/${userId}`, {
     method: 'DELETE'
   })
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        // Refresh attendee list
-        openAttendeesModal(attendeesModalEventId);
+        // Refresh the modal with updated attendees
+        openEditEventModal(editModalEventId);
       } else {
         alert('Failed to remove attendee: ' + (data.error || 'Unknown error'));
       }
     });
 }
 
+function confirmDeleteEvent(eventId) {
+  eventToDelete = { event_id: eventId };
+  showEvents(currentEventPage);
+}
+
+function cancelDeleteEvent() {
+  eventToDelete = null;
+  showEvents(currentEventPage);
+}
+
+function deleteEventConfirmed() {
+  fetch(`/admin/api/events/${eventToDelete.event_id}`, { method: 'DELETE' })
+    .then(res => res.json())
+    .then(() => {
+      eventToDelete = null;
+      showEvents(currentEventPage);
+    });
+}
+
+function setEventPage(page, perPage) {
+  currentEventPage = page;
+  showEvents(currentEventPage, perPage);
+}
+
 function formatEventDateDMY(dateStr) {
-  console.log('Raw date:', dateStr);
   if (!dateStr) return '';
-  // Extract YYYY-MM-DD from any string
   const match = dateStr.match(/\d{4}-\d{2}-\d{2}/);
   if (match) {
     const [year, month, day] = match[0].split('-');
-    console.log('Formatted date:', `${month}/${day}/${year}`);
     return `${month}/${day}/${year}`;
   }
-  return dateStr; // fallback
+  return dateStr;
 }
